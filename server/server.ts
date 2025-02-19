@@ -7,3 +7,4 @@ app.listen(process.env.PORT, () => {
   console.log(`El servidor está corriendo en el puerto: ${process.env.PORT}`);
   connectDB();
 });
+
