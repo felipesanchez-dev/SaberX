@@ -10,11 +10,11 @@ if (!redisUrl) {
 
 export const redis = new Redis(redisUrl);
 
-redis.on("connect", () => {
-    console.log("✅ Conexión exitosa a Redis");
-});
+// redis.on("connect", () => {
+//     console.log("✅ Conexión exitosa a Redis");
+// });
 
-redis.on("error", (error) => {
-    console.error(`❌ Error en Redis: ${error.message}`);
-});
+// redis.on("error", (error) => {
+//     console.error(`❌ Error en Redis: ${error.message}`);
+// });
 
