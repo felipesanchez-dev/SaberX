@@ -1,0 +1,6 @@
+# 📦 No subir dependencias de Node.js
+node_modules/
+package-lock.json
+
+# ⚙️ Configuración de entornos
+.env
