@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 // Configuración de CORS para permitir solicitudes desde el origen definido en .env
 app.use(cors({
-   origin: process.env.ORIGIN
+   origin: process.env.ORIGIN,
 }));
 
 // Ruta de prueba para verificar que el servidor está funcionando
