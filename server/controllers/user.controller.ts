@@ -5,7 +5,7 @@ import { CatchAsyncError } from '../middleware/catchAsyncError';
 import jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
-import senEmail from '../utils/sendMail';
+import sendEmail from '../utils/sendMail';
 require('dotenv').config();
 
 // Interfaz para la estructura del cuerpo de la solicitud de registro
@@ -14,7 +14,7 @@ interface IRegistrationBody {
     email: string;
     password: string;
     avatar?: string;
-};
+}
 
 // Controlador para registrar un usuario
 export const registrationUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
@@ -23,7 +23,7 @@ export const registrationUser = CatchAsyncError(async (req: Request, res: Respon
 
         // Verifica si el correo ya está registrado
         const isEmailExist = await userModel.findOne({ email });
-        if (!isEmailExist) {
+        if (isEmailExist) {  // Si el correo ya existe, se retorna el error
             return next(new ErrorHandler("El correo electrónico ya está registrado.", 400));
         }
 
@@ -36,13 +36,15 @@ export const registrationUser = CatchAsyncError(async (req: Request, res: Respon
 
         // Genera un token de activación para validar el correo
         const activationToken = createActivationToken(user);
-
         const activationCode = activationToken.activationCode;
         const data = { user: { name: user.name }, activationCode };
+
+        // Renderiza la plantilla de correo de activación
+        // (la variable 'html' se puede usar si se quiere enviar el contenido renderizado directamente)
         const html = await ejs.renderFile(path.join(__dirname, '../mails/activation-mail.ejs'), data);
 
         try {
-            await senEmail({
+            await sendEmail({
                 email: user.email,
                 subject: 'Activación de cuenta',
                 template: 'activation-mail.ejs',
@@ -50,16 +52,15 @@ export const registrationUser = CatchAsyncError(async (req: Request, res: Respon
             });
             res.status(201).json({
                 success: true,
-                message: 'Plase check your emails: ${user.email} to activate your account',
+                message: `Please check your emails: ${user.email} to activate your account`,
                 activationToken: activationToken.token,
             });
-
         } catch (error: any) {
             return next(new ErrorHandler(error.message, 400));
-        };
-    }catch (error: any) {
+        }
+    } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
-    };
+    }
 });
 
 // Interfaz para la estructura del token de activación
@@ -70,7 +71,7 @@ interface IActivationToken {
 
 // Función para crear un token de activación
 export const createActivationToken = (user: any): IActivationToken => {
-    // Genera un código de activación de 4 dígitos
+    // Genera un código de activación de 4 dígitos aleatorio
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
     // Crea un token JWT con el usuario y código de activación
@@ -81,7 +82,7 @@ export const createActivationToken = (user: any): IActivationToken => {
         },
         process.env.ACTIVATION_SECRET as Secret,
         {
-            expiresIn: "5m", // Expira en 5 minutos
+            expiresIn: "5m", // El token expira en 5 minutos
         }
     );
 

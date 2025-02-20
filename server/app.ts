@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ErrorMiddleware } from './middleware/error';
+import userRouter from './routes/user.route';
 require('dotenv').config();
 
 export const app = express();
@@ -15,6 +16,16 @@ app.use(cookieParser());
 app.use(cors({
     origin: process.env.ORIGIN,
 }));
+
+
+// Ruta principal para las rutas API
+app.use('/api/v1', userRouter);
+
+
+
+
+
+
 
 // Ruta de prueba para verificar que el servidor está funcionando
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
