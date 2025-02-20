@@ -1,5 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+require('dotenv').config();
 
 // Expresión regular para validar correos electrónicos
 const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,6 +19,8 @@ export interface IUser extends Document {
     isVerified: boolean;
     courses: Array<{ courseId: string }>;
     comparePasswords: (password: string) => Promise<boolean>;
+    SingnAccessToken: () => string;
+    SingnRefreshToken: () => string;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
@@ -63,6 +67,16 @@ userSchema.pre<IUser>("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
+
+// Token de acceso para iniciar sesion
+userSchema.methods.SingnAccessToken = function () {
+    return jwt.sign({id: this._id}, process.env.ACCESS_TOKEN || '');
+};
+
+// Token de refresco para iniciar sesion
+userSchema.methods.SingnRefreshToken = function () {
+    return jwt.sign({id: this._id}, process.env.REFRESH_TOKEN || '');
+}
 
 // Método para comparar contraseñas
 userSchema.methods.comparePasswords = async function (enteredPassword: string): Promise<boolean> {
