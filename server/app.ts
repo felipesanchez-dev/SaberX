@@ -21,12 +21,6 @@ app.use(cors({
 // Ruta principal para las rutas API
 app.use('/api/v1', userRouter);
 
-
-
-
-
-
-
 // Ruta de prueba para verificar que el servidor está funcionando
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json({

@@ -1,14 +1,14 @@
+import { CatchAsyncError } from './../middleware/catchAsyncError';
 import { Request, Response, NextFunction } from 'express';
-import userModel from '../models/user.model';
+import userModel, { IUser } from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
-import { CatchAsyncError } from '../middleware/catchAsyncError';
 import jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendMail';
 require('dotenv').config();
 
-// Interfaz para la estructura del cuerpo de la solicitud de registro
+// Interfaz para definir la estructura esperada del cuerpo de la solicitud de registro
 interface IRegistrationBody {
     name: string;
     email: string;
@@ -21,9 +21,9 @@ export const registrationUser = CatchAsyncError(async (req: Request, res: Respon
     try {
         const { name, email, password } = req.body;
 
-        // Verifica si el correo ya está registrado
+        // Verifica si el correo ya está registrado en la base de datos
         const isEmailExist = await userModel.findOne({ email });
-        if (isEmailExist) {  // Si el correo ya existe, se retorna el error
+        if (isEmailExist) {  // Si el correo ya existe, se retorna un error
             return next(new ErrorHandler("El correo electrónico ya está registrado.", 400));
         }
 
@@ -39,20 +39,22 @@ export const registrationUser = CatchAsyncError(async (req: Request, res: Respon
         const activationCode = activationToken.activationCode;
         const data = { user: { name: user.name }, activationCode };
 
-        // Renderiza la plantilla de correo de activación
-        // (la variable 'html' se puede usar si se quiere enviar el contenido renderizado directamente)
+        // Renderiza la plantilla de correo de activación con los datos del usuario
         const html = await ejs.renderFile(path.join(__dirname, '../mails/activation-mail.ejs'), data);
 
         try {
+            // Envía el correo electrónico de activación
             await sendEmail({
                 email: user.email,
                 subject: 'Activación de cuenta',
                 template: 'activation-mail.ejs',
                 data,
             });
+            
+            // Responde con éxito y envía el token de activación al cliente
             res.status(201).json({
                 success: true,
-                message: `Please check your emails: ${user.email} to activate your account`,
+                message: `Por favor, revise sus correos electrónicos: ${user.email} para activar su cuenta`,
                 activationToken: activationToken.token,
             });
         } catch (error: any) {
@@ -63,28 +65,74 @@ export const registrationUser = CatchAsyncError(async (req: Request, res: Respon
     }
 });
 
-// Interfaz para la estructura del token de activación
+// Interfaz para definir la estructura del token de activación
 interface IActivationToken {
     token: string;
     activationCode: string;
 }
 
-// Función para crear un token de activación
+// Función para generar un token de activación único para cada usuario
 export const createActivationToken = (user: any): IActivationToken => {
     // Genera un código de activación de 4 dígitos aleatorio
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-    // Crea un token JWT con el usuario y código de activación
+    // Crea un token JWT con el usuario y el código de activación
     const token = jwt.sign(
         {
             user,
             activationCode,
         },
-        process.env.ACTIVATION_SECRET as Secret,
+        process.env.ACTIVATION_SECRET as Secret, // Usa una clave secreta desde las variables de entorno
         {
-            expiresIn: "5m", // El token expira en 5 minutos
+            expiresIn: "5m", // El token expira en 5 minutos para mayor seguridad
         }
     );
 
     return { token, activationCode };
 };
+
+// Interfaz para definir la estructura esperada en la activación de cuenta
+interface IActivationRequest {
+    activation_token: string;
+    activation_code: string;
+}
+
+// Controlador para activar un usuario una vez que introduce el código de activación correcto
+export const activateUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { activation_token, activation_code } = req.body as IActivationRequest;
+
+        // Verifica el token JWT y extrae el usuario y código de activación almacenado
+        const newUser: {user: IUser; activationCode: string} = jwt.verify(
+            activation_token,
+            process.env.ACTIVATION_SECRET as Secret
+        ) as {user: IUser; activationCode: string};
+
+        // Si el código de activación proporcionado no coincide con el guardado en el token, retorna un error
+        if (newUser.activationCode !== activation_code) {
+            return next(new ErrorHandler("Código de activación inválido.", 400));
+        }
+
+        const { name, email, password } = newUser.user;
+
+        // Verifica si el usuario ya existe en la base de datos
+        const existUser = await userModel.findOne({ email });
+        if (existUser) {
+            return next(new ErrorHandler("El correo electrónico ya está registrado.", 400));
+        }
+
+        // Crea el usuario en la base de datos con los datos validados
+        const user = await userModel.create({
+            name,
+            email,
+            password,
+        });
+
+        // Responde con éxito si la cuenta se ha activado correctamente
+        res.status(201).json({
+            success: true,
+        });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
