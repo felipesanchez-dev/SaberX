@@ -6,6 +6,7 @@ import jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendMail';
+import { sendToken } from '../utils/jwt';
 require('dotenv').config();
 
 // Interfaz para definir la estructura esperada del cuerpo de la solicitud de registro
@@ -132,6 +133,42 @@ export const activateUser = CatchAsyncError(async(req: Request, res: Response, n
         res.status(201).json({
             success: true,
         });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
+// Interfaz para definir la estructura esperada del cuerpo de la solicitud de inicio de sesión
+interface ILoginBody {
+    email: string;
+    password: string;
+}
+
+// Controlador para el inicio de sesión de usuario
+export const LoginUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, password } = req.body as ILoginBody;
+
+        // Verifica que ambos campos estén presentes
+        if (!email || !password) {
+            return next(new ErrorHandler("Por favor, ingrese su correo electrónico y contraseña.", 400));
+        }
+
+        // Busca el usuario en la base de datos con su email
+        const user = await userModel.findOne({ email }).select("+password");
+        if (!user) {
+            return next(new ErrorHandler("Correo electrónico o contraseña incorrectos.", 400));
+        }
+
+        // Compara la contraseña ingresada con la almacenada
+        const isPasswordMatch = await user.comparePasswords(password);
+        if (!isPasswordMatch) {
+            return next(new ErrorHandler("Correo electrónico o contraseña incorrectos.", 400));
+        }
+        
+        // Envía el token de autenticación
+        sendToken(user, 200, res);
+
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }

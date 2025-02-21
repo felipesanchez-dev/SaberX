@@ -1,10 +1,15 @@
 import express from 'express';
-import { activateUser, registrationUser } from '../controllers/user.controller';
+import { activateUser, LoginUser, registrationUser } from '../controllers/user.controller';
 
 const userRouter = express.Router();
 
-userRouter.post('/registration', registrationUser); //Registro de usuario
+// Ruta para el registro de usuario
+userRouter.post('/registration', registrationUser);
 
-userRouter.post('/activate-user', activateUser); // activacion de usuario
+// Ruta para la activación de cuenta
+userRouter.post('/activate-user', activateUser);
+
+// Ruta para el inicio de sesión
+userRouter.post('/login', LoginUser);
 
 export default userRouter;
