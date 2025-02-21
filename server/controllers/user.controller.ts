@@ -174,6 +174,7 @@ export const loginUser = CatchAsyncError(async(req: Request, res: Response, next
         return next(new ErrorHandler(error.message, 400));
     }
 });
+
 // Controlador para cerrar de sesión de usuario
 export const logoutUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
