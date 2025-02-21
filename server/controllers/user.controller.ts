@@ -7,6 +7,7 @@ import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendMail';
 import { sendToken } from '../utils/jwt';
+import { redis } from '../utils/redis';
 require('dotenv').config();
 
 // Interfaz para definir la estructura esperada del cuerpo de la solicitud de registro
@@ -181,6 +182,11 @@ export const logoutUser = CatchAsyncError(async (req: Request, res: Response, ne
         // Elimina las cookies de autenticación estableciendo un valor vacío y una expiración inmediata
         res.cookie('access_token', "", { maxAge: 1 });
         res.cookie('refresh_token', "", { maxAge: 1 });
+
+        // Elimina la sesión del usuario en Redis
+        const userId = req.user?._id ? req.user._id.toString() : '';
+        await redis.del(userId);
+
 
         // Responde con un mensaje de éxito indicando que la sesión ha finalizado
         res.status(200).json({

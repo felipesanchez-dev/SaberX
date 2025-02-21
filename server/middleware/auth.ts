@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CatchAsyncError } from './catchAsyncError';
 import ErrorHandler from '../utils/ErrorHandler';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { redis } from '../utils/redis';
 
 // Middleware para verificar si el usuario está autenticado
@@ -16,7 +16,7 @@ export const isAuthenticated = CatchAsyncError(async (req: Request, res: Respons
         return next(new ErrorHandler("El token de acceso no es válido", 400));
     };
 
-    const user = await redis.get((decoded as jwt.JwtPayload).id); //Se tiene error de tipado en el id
+    const user = await redis.get((decoded as JwtPayload).id); //Se tiene error de tipado en el id
     if (!user) {
         return next(new ErrorHandler("Usuario no encontrado", 400));
     };
