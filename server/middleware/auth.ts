@@ -12,11 +12,11 @@ export const isAuthenticated = CatchAsyncError(async (req: Request, res: Respons
     };
 
     const decoded = jwt.verify(access_token, process.env.ACCESS_TOKEN as string);
-    if (!decoded) {
+    if (!decoded || typeof decoded === 'string' || !('id' in decoded)) {
         return next(new ErrorHandler("El token de acceso no es válido", 400));
     };
 
-    const user = await redis.get(decoded.id); //Se tiene error de tipado en el id
+    const user = await redis.get((decoded as jwt.JwtPayload).id); //Se tiene error de tipado en el id
     if (!user) {
         return next(new ErrorHandler("Usuario no encontrado", 400));
     };
