@@ -145,7 +145,7 @@ interface ILoginBody {
 }
 
 // Controlador para el inicio de sesión de usuario
-export const LoginUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
+export const loginUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body as ILoginBody;
 
