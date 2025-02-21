@@ -7,6 +7,7 @@ import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendMail';
 import { sendToken } from '../utils/jwt';
+import { redis } from '../utils/redis';
 require('dotenv').config();
 
 // Interfaz para definir la estructura esperada del cuerpo de la solicitud de registro
@@ -175,21 +176,24 @@ export const loginUser = CatchAsyncError(async(req: Request, res: Response, next
 });
 
 // Función para cerrar sesión del usuario
-export const logoutUser = CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            // Eliminar cookies estableciendo un valor vacío y una duración mínima
-            res.cookie("accessToken", "", { maxAge: 1 });
-            res.cookie("refreshToken", "", { maxAge: 1 });
-            
-            // Responder con un mensaje de éxito
-            res.status(200).json({
-                success: true,
-                message: "Se ha cerrado la sesión con éxito",
-            });
-        } catch (error: any) {
-            // Manejo de errores y respuesta en caso de fallo
-            return next(new ErrorHandler(error.message, 400));
+export const logoutUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log("Usuario autenticado:", req.user);
+
+        if (!req.user) {
+            return next(new ErrorHandler("Por favor, inicie sesión para acceder a esta ruta.", 401));
         }
+
+        res.cookie("accessToken", "", { maxAge: 1 });
+        res.cookie("refreshToken", "", { maxAge: 1 });
+        redis.del(req.user.id);
+
+        res.status(200).json({
+            success: true,
+            message: "Se ha cerrado la sesión con éxito",
+        });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
     }
-);
+});
+
