@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, LoginUser, registrationUser } from '../controllers/user.controller';
+import { activateUser, logoutUser, registrationUser } from '../controllers/user.controller';
 
 const userRouter = express.Router();
 
@@ -10,6 +10,10 @@ userRouter.post('/registration', registrationUser);
 userRouter.post('/activate-user', activateUser);
 
 // Ruta para el inicio de sesión
-userRouter.post('/login', LoginUser);
+userRouter.post('/login', logoutUser);
+
+// Ruta para cerrar sesión
+userRouter.get('/logout', logoutUser);
+
 
 export default userRouter;

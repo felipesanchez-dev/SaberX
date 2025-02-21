@@ -145,7 +145,7 @@ interface ILoginBody {
 }
 
 // Controlador para el inicio de sesión de usuario
-export const LoginUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
+export const loginUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body as ILoginBody;
 
@@ -173,3 +173,23 @@ export const LoginUser = CatchAsyncError(async(req: Request, res: Response, next
         return next(new ErrorHandler(error.message, 400));
     }
 });
+
+// Función para cerrar sesión del usuario
+export const logoutUser = CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            // Eliminar cookies estableciendo un valor vacío y una duración mínima
+            res.cookie("accessToken", "", { maxAge: 1 });
+            res.cookie("refreshToken", "", { maxAge: 1 });
+            
+            // Responder con un mensaje de éxito
+            res.status(200).json({
+                success: true,
+                message: "Se ha cerrado la sesión con éxito",
+            });
+        } catch (error: any) {
+            // Manejo de errores y respuesta en caso de fallo
+            return next(new ErrorHandler(error.message, 400));
+        }
+    }
+);
