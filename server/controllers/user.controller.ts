@@ -174,16 +174,20 @@ export const loginUser = CatchAsyncError(async(req: Request, res: Response, next
         return next(new ErrorHandler(error.message, 400));
     }
 });
-
-export const logoutUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
+// Controlador para cerrar de sesión de usuario
+export const logoutUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        res.cookie('access_token', "", {maxAge: 1});
-        res.cookie('refresh_token', "", {maxAge: 1});
+        // Elimina las cookies de autenticación estableciendo un valor vacío y una expiración inmediata
+        res.cookie('access_token', "", { maxAge: 1 });
+        res.cookie('refresh_token', "", { maxAge: 1 });
+
+        // Responde con un mensaje de éxito indicando que la sesión ha finalizado
         res.status(200).json({
-            success: true, 
-            message: 'Sesión finalizada exitosamente.' 
+            success: true,
+            message: 'Sesión finalizada exitosamente.'
         });
     } catch (error: any) {
+        // Manejo de errores si ocurre algún problema en el proceso de cierre de sesión
         return next(new ErrorHandler(error.message, 400));
     }
 });
