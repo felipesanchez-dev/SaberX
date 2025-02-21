@@ -20,48 +20,44 @@ interface IRegistrationBody {
 
 // Controlador para registrar un usuario
 export const registrationUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    const { name, email, password } = req.body;
+
+    // Verifica si el correo ya está registrado en la base de datos
+    const isEmailExist = await userModel.findOne({ email });
+    if (isEmailExist) { // Si el correo ya existe, se retorna un error
+        return next(new ErrorHandler("El correo electrónico ya está registrado.", 400));
+    }
+
+    // Crea un objeto usuario con los datos recibidos
+    const user: IRegistrationBody = {
+        name,
+        email,
+        password,
+    };
+
+    // Genera un token de activación para validar el correo
+    const activationToken = createActivationToken(user);
+    const activationCode = activationToken.activationCode;
+    const data = { user: { name: user.name }, activationCode };
+
+    // Renderiza la plantilla de correo de activación con los datos del usuario
+    const html = await ejs.renderFile(path.join(__dirname, '../mails/activation-mail.ejs'), data);
+
     try {
-        const { name, email, password } = req.body;
-
-        // Verifica si el correo ya está registrado en la base de datos
-        const isEmailExist = await userModel.findOne({ email });
-        if (isEmailExist) {  // Si el correo ya existe, se retorna un error
-            return next(new ErrorHandler("El correo electrónico ya está registrado.", 400));
-        }
-
-        // Crea un objeto usuario con los datos recibidos
-        const user: IRegistrationBody = {
-            name,
-            email,
-            password,
-        };
-
-        // Genera un token de activación para validar el correo
-        const activationToken = createActivationToken(user);
-        const activationCode = activationToken.activationCode;
-        const data = { user: { name: user.name }, activationCode };
-
-        // Renderiza la plantilla de correo de activación con los datos del usuario
-        const html = await ejs.renderFile(path.join(__dirname, '../mails/activation-mail.ejs'), data);
-
-        try {
-            // Envía el correo electrónico de activación
-            await sendEmail({
-                email: user.email,
-                subject: 'Activación de cuenta',
-                template: 'activation-mail.ejs',
-                data,
-            });
-            
-            // Responde con éxito y envía el token de activación al cliente
-            res.status(201).json({
-                success: true,
-                message: `Por favor, revise sus correos electrónicos: ${user.email} para activar su cuenta`,
-                activationToken: activationToken.token,
-            });
-        } catch (error: any) {
-            return next(new ErrorHandler(error.message, 400));
-        }
+        // Envía el correo electrónico de activación
+        await sendEmail({
+            email: user.email,
+            subject: 'Activación de cuenta',
+            template: 'activation-mail.ejs',
+            data,
+        });
+        
+        // Responde con éxito y envía el token de activación al cliente
+        res.status(201).json({
+            success: true,
+            message: `Por favor, revise sus correos electrónicos: ${user.email} para activar su cuenta`,
+            activationToken: activationToken.token,
+        });
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
@@ -105,10 +101,10 @@ export const activateUser = CatchAsyncError(async(req: Request, res: Response, n
         const { activation_token, activation_code } = req.body as IActivationRequest;
 
         // Verifica el token JWT y extrae el usuario y código de activación almacenado
-        const newUser: {user: IUser; activationCode: string} = jwt.verify(
+        const newUser = jwt.verify(
             activation_token,
             process.env.ACTIVATION_SECRET as Secret
-        ) as {user: IUser; activationCode: string};
+        ) as { user: IUser; activationCode: string };
 
         // Si el código de activación proporcionado no coincide con el guardado en el token, retorna un error
         if (newUser.activationCode !== activation_code) {
@@ -124,16 +120,10 @@ export const activateUser = CatchAsyncError(async(req: Request, res: Response, n
         }
 
         // Crea el usuario en la base de datos con los datos validados
-        const user = await userModel.create({
-            name,
-            email,
-            password,
-        });
+        await userModel.create({ name, email, password });
 
         // Responde con éxito si la cuenta se ha activado correctamente
-        res.status(201).json({
-            success: true,
-        });
+        res.status(201).json({ success: true });
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
@@ -147,36 +137,24 @@ interface ILoginBody {
 
 // Controlador para el inicio de sesión de usuario
 export const loginUser = CatchAsyncError(async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { email, password } = req.body as ILoginBody;
+    const { email, password } = req.body as ILoginBody;
 
-        // Verifica que ambos campos estén presentes
-        if (!email || !password) {
-            return next(new ErrorHandler("Por favor, ingrese su correo electrónico y contraseña.", 400));
-        }
-
-        // Busca el usuario en la base de datos con su email
-        const user = await userModel.findOne({ email }).select("+password");
-        if (!user) {
-            return next(new ErrorHandler("Correo electrónico o contraseña incorrectos.", 400));
-        }
-
-        // Compara la contraseña ingresada con la almacenada
-        const isPasswordMatch = await user.comparePasswords(password);
-        if (!isPasswordMatch) {
-            return next(new ErrorHandler("Correo electrónico o contraseña incorrectos.", 400));
-        }
-        
-        // Envía el token de autenticación
-        sendToken(user, 200, res);
-        console.log(user); // Test para revisar si se estan enviando los datos del usuario (Exitoso)
-
-    } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400));
+    // Verifica que ambos campos estén presentes
+    if (!email || !password) {
+        return next(new ErrorHandler("Por favor, ingrese su correo electrónico y contraseña.", 400));
     }
+
+    // Busca el usuario en la base de datos con su email
+    const user = await userModel.findOne({ email }).select("+password");
+    if (!user || !(await user.comparePasswords(password))) {
+        return next(new ErrorHandler("Correo electrónico o contraseña incorrectos.", 400));
+    }
+    
+    // Envía el token de autenticación
+    sendToken(user, 200, res);
 });
 
-// Controlador para cerrar de sesión de usuario
+// Controlador para cerrar sesión de usuario
 export const logoutUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Elimina las cookies de autenticación estableciendo un valor vacío y una expiración inmediata
@@ -184,17 +162,12 @@ export const logoutUser = CatchAsyncError(async (req: Request, res: Response, ne
         res.cookie('refresh_token', "", { maxAge: 1 });
 
         // Elimina la sesión del usuario en Redis
-        const userId = req.user?._id ? req.user._id.toString() : '';
+        const userId = req.user?._id?.toString() || '';
         await redis.del(userId);
 
-
         // Responde con un mensaje de éxito indicando que la sesión ha finalizado
-        res.status(200).json({
-            success: true,
-            message: 'Sesión finalizada exitosamente.'
-        });
+        res.status(200).json({ success: true, message: 'Sesión finalizada exitosamente.' });
     } catch (error: any) {
-        // Manejo de errores si ocurre algún problema en el proceso de cierre de sesión
         return next(new ErrorHandler(error.message, 400));
     }
 });
