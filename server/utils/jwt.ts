@@ -17,7 +17,9 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
     const refreshToken = user.SingnRefreshToken(); // Genera el token de refresco
 
     // Guarda la sesión del usuario en Redis
-    redis.set(String(user._id), JSON.stringify(user));
+    // redis.set(user._id, JSON.stringify(user) as any)
+    redis.set(String(user._id), JSON.stringify(user))
+    
 
     // Configura tiempos de expiración desde las variables de entorno
     const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRES || '300', 10);
@@ -46,8 +48,8 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
     }
 
     // Establece las cookies en la respuesta
-    res.cookie('accessToken', accessToken, accessTokenOptions);
-    res.cookie('refreshToken', refreshToken, refreshTokenOptions);
+    res.cookie('access_token', accessToken, accessTokenOptions);
+    res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
     // Responde con éxito y envía los tokens al cliente
     res.status(statusCode).json({
