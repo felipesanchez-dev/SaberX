@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { redis } from "../utils/redis";
 import ErrorHandler from "../utils/ErrorHandler";
+import { CatchAsyncError } from "./catchAsyncError";
+require('dotenv').config();
 
 
 // Middleware para verificar la autenticación del usuario

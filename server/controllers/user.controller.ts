@@ -171,3 +171,30 @@ export const logoutUser = CatchAsyncError(async (req: Request, res: Response, ne
         return next(new ErrorHandler(error.message, 400));
     }
 });
+
+
+// Actualizar token de acceso
+export const updateAccessToken = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const refresh_token = req.cookies.refresh_token as string;
+        const decoded = jwt.verify(refresh_token,
+            process.env.REFRESH_TOKEN_SECRET as string) as JsonWebKey;
+
+        const message = 'Error no se pudo actualizar el token'
+        if (!decoded) {
+            return next(new ErrorHandler(message, 400));
+        }
+
+        const sesion = await redis.get(decoded.id as string);
+        if (!sesion) {
+            return next(new ErrorHandler(message, 400));
+        }
+        
+        const user = JSON.parse(sesion);
+        
+
+    } catch (error: any) {
+        console.error("Error en actualizar token de acceso:", error);
+        return next(new ErrorHandler(error.message, 400));
+    }
+})
