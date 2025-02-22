@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, loginUser, logoutUser, registrationUser, updateAccessToken } from '../controllers/user.controller';
+import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, updateAccessToken } from '../controllers/user.controller';
 import { isAuthenticated } from '../middleware/auth';
 
 const userRouter = express.Router();
@@ -19,5 +19,9 @@ userRouter.get('/logout', isAuthenticated, logoutUser);
 
 // Ruta para refrescar token
 userRouter.get('/refresh', updateAccessToken);
+
+// Ruta para obtener el usuario actual
+userRouter.get('/me', isAuthenticated, getUserInfo);
+
 
 export default userRouter;

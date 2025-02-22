@@ -8,6 +8,7 @@ import path from 'path';
 import sendEmail from '../utils/sendMail';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
 import { redis } from '../utils/redis';
+import { getUserById } from '../services/user.service';
 require('dotenv').config();
 
 // Interfaz para definir la estructura esperada del cuerpo de la solicitud de registro
@@ -217,3 +218,18 @@ export const updateAccessToken = CatchAsyncError(async (
         return next(new ErrorHandler(error.message, 400));
     }
 });
+
+// Controlador para obtener la información del usuario
+export const getUserInfo = CatchAsyncError(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const userId = req.user?._id;
+        getUserById(userId, res);
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+})
