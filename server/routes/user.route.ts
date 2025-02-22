@@ -1,6 +1,6 @@
 import express from 'express';
 import { activateUser, loginUser, logoutUser, registrationUser } from '../controllers/user.controller';
-import { authorizeRoles, isAuthenticated } from '../middleware/auth';
+import { isAuthenticated } from '../middleware/auth';
 
 const userRouter = express.Router();
 
