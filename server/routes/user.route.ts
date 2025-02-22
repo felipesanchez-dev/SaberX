@@ -1,6 +1,6 @@
 import express from 'express';
 import { activateUser, loginUser, logoutUser, registrationUser } from '../controllers/user.controller';
-import { isAuthenticated } from '../middleware/auth';
+import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 const userRouter = express.Router();
 
@@ -15,5 +15,6 @@ userRouter.post('/login', loginUser);
 
 // Ruta para cerrar de sesión
 userRouter.get('/logout', isAuthenticated, logoutUser);
+// userRouter.get('/logout', isAuthenticated, authorizeRoles('admin'), logoutUser);
 
 export default userRouter;

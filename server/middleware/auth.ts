@@ -3,6 +3,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { redis } from "../utils/redis";
 import ErrorHandler from "../utils/ErrorHandler";
 
+
+// Middleware para verificar la autenticación del usuario
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { access_token } = req.cookies;
@@ -46,3 +48,14 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         return next(new ErrorHandler("Error en la autenticación", 500));
     }
 };
+
+
+// Este middleware se utiliza para validar el rol de usuario
+export const authorizeRoles = (...roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if (!roles.includes(req.user?.role || '')) {
+            return next(new ErrorHandler(`El rol ${req.user?.role} no está autorizado para acceder a esta ruta`, 403));
+        }
+        next();
+    }
+}
