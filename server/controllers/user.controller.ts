@@ -226,7 +226,7 @@ export const getUserInfo = CatchAsyncError(async (
     next: NextFunction
 ) => {
     try {
-        const userId = req.user?._id;
+        const userId = req.user?._id?.toString() || '';
         getUserById(userId, res);
 
     } catch (error: any) {
