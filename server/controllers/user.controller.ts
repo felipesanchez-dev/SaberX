@@ -6,7 +6,7 @@ import jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendMail';
-import { sendToken } from '../utils/jwt';
+import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
 import { redis } from '../utils/redis';
 require('dotenv').config();
 
@@ -174,11 +174,15 @@ export const logoutUser = CatchAsyncError(async (req: Request, res: Response, ne
 
 
 // Actualizar token de acceso
-export const updateAccessToken = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+export const updateAccessToken = CatchAsyncError(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ) => {
     try {
         const refresh_token = req.cookies.refresh_token as string;
         const decoded = jwt.verify(refresh_token,
-            process.env.REFRESH_TOKEN_SECRET as string) as JsonWebKey;
+            process.env.REFRESH_TOKEN as string) as JsonWebKey;
 
         const message = 'Error no se pudo actualizar el token'
         if (!decoded) {
@@ -191,10 +195,25 @@ export const updateAccessToken = CatchAsyncError(async (req: Request, res: Respo
         }
         
         const user = JSON.parse(sesion);
-        
+
+        const accessToken = jwt.sign({id: user._id}, process.env.ACCESS_TOKEN as string, {
+            expiresIn: '5m'
+        });
+
+        const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_TOKEN as string, {
+            expiresIn: '3d'
+        });
+
+        res.cookie('access_token', accessToken, accessTokenOptions);
+        res.cookie('refresh_token', refreshToken, refreshTokenOptions );
+
+        res.status(200).json({
+            success: 'Success',
+            accessToken,
+        });
 
     } catch (error: any) {
         console.error("Error en actualizar token de acceso:", error);
         return next(new ErrorHandler(error.message, 400));
     }
-})
+});

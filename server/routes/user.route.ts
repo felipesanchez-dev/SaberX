@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, loginUser, logoutUser, registrationUser } from '../controllers/user.controller';
+import { activateUser, loginUser, logoutUser, registrationUser, updateAccessToken } from '../controllers/user.controller';
 import { isAuthenticated } from '../middleware/auth';
 
 const userRouter = express.Router();
@@ -16,5 +16,8 @@ userRouter.post('/login', loginUser);
 // Ruta para cerrar de sesión
 userRouter.get('/logout', isAuthenticated, logoutUser);
 // userRouter.get('/logout', isAuthenticated, authorizeRoles('admin'), logoutUser);
+
+// Ruta para refrescar token
+userRouter.get('/refresh', updateAccessToken);
 
 export default userRouter;

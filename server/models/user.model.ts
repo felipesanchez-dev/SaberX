@@ -70,12 +70,16 @@ userSchema.pre<IUser>("save", async function (next) {
 
 // Token de acceso para iniciar sesion
 userSchema.methods.SignAccessToken = function () {
-    return jwt.sign({id: this._id}, process.env.ACCESS_TOKEN || '');
+    return jwt.sign({id: this._id}, process.env.ACCESS_TOKEN || '', {
+        expiresIn: '5m',
+    });
 };
 
 // Token de refresco para iniciar sesion
 userSchema.methods.SignRefreshToken = function () {
-    return jwt.sign({id: this._id}, process.env.REFRESH_TOKEN || '');
+    return jwt.sign({id: this._id}, process.env.REFRESH_TOKEN || '',{
+        expiresIn: '3d',
+    });
 }
 
 // Método para comparar contraseñas
