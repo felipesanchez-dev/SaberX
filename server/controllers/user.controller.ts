@@ -182,7 +182,7 @@ export const updateAccessToken = CatchAsyncError(async (
     try {
         const refresh_token = req.cookies.refresh_token as string;
         const decoded = jwt.verify(refresh_token,
-            process.env.REFRESH_TOKEN as string) as JsonWebKey;
+            process.env.REFRESH_TOKEN as string) as { id: string };
 
         const message = 'Error no se pudo actualizar el token'
         if (!decoded) {
