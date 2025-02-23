@@ -205,6 +205,8 @@ export const updateAccessToken = CatchAsyncError(async (
             expiresIn: '3d'
         });
 
+        req.user = user;
+
         res.cookie('access_token', accessToken, accessTokenOptions);
         res.cookie('refresh_token', refreshToken, refreshTokenOptions );
 
@@ -260,4 +262,49 @@ export const socialAuth = CatchAsyncError(async (
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
+});
+
+// Actualizar información de usuario
+interface IUpdateUserInfo {
+    name?: string;
+    email?: string;
+}
+
+export const updateUserInfo = CatchAsyncError(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=> {
+    try {
+        const { name, email } = req.body as IUpdateUserInfo;
+        const userId = req.user?.id;
+        const user = await userModel.findOne(userId);
+
+        if (email && user) {
+            const isEmailExist = await userModel.findOne({email});
+            if (isEmailExist) {
+                return next(new ErrorHandler("El correo electrónico ya está en uso.", 400));
+            }
+            user.email = email;
+        }
+
+        if (name && user) {
+            user.name = name;
+        }
+
+        await user?.save();
+
+        await redis.set(userId, JSON.stringify(user));
+
+        res.status(201).json(
+            {
+                success: true,
+                // message: "Información del usuario actualizada correctamente",
+                user,
+            }
+        )
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    } 
 })
