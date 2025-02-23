@@ -338,11 +338,12 @@ export const updatePassword = CatchAsyncError(async (
             return next(new ErrorHandler("Contraseña antigua no válida o incorrecta", 400));
         }
 
-        user?.password = newPassword;
+        if (user) {
+            user.password = newPassword;
+            await user.save();
+        }
 
-        await user?.save();
-
-        await redis.set(user?._id, JSON.stringify(user));
+        await redis.set(String(user?._id), JSON.stringify(user));
 
         res.status(201).json({
             success: true,
