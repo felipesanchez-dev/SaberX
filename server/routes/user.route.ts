@@ -13,23 +13,23 @@ userRouter.post('/activate-user', activateUser);
 // Ruta para el inicio de sesión
 userRouter.post('/login', loginUser);
 
-// Ruta para cerrar de sesión
+// Ruta para cerrar sesión del usuario autenticado
 userRouter.get('/logout', isAuthenticated, logoutUser);
-// userRouter.get('/logout', isAuthenticated, authorizeRoles('admin'), logoutUser);
+// userRouter.get('/logout', isAuthenticated, authorizeRoles('admin'), logoutUser); // Alternativa con roles
 
-// Ruta para refrescar token
+// Ruta para refrescar el token de acceso
 userRouter.get('/refresh', updateAccessToken);
 
-// Ruta para obtener el usuario actual
+// Ruta para obtener la información del usuario autenticado
 userRouter.get('/me', isAuthenticated, getUserInfo);
 
-// Ruta para crear usuario sin contraseña
-userRouter.post('/social-auth', socialAuth)
+// Ruta para autenticación social sin contraseña
+userRouter.post('/social-auth', socialAuth);
 
-// Ruta para actualizar datos sociales
-userRouter.put('/update-user-info', isAuthenticated, updateUserInfo)
+// Ruta para actualizar la información del usuario autenticado
+userRouter.put('/update-user-info', isAuthenticated, updateUserInfo);
 
-// Ruta para actualizar contraseña
-userRouter.put('/update-user-password', isAuthenticated, updatePassword)
+// Ruta para actualizar la contraseña del usuario autenticado
+userRouter.put('/update-user-password', isAuthenticated, updatePassword);
 
 export default userRouter;
