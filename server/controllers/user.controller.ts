@@ -173,23 +173,25 @@ export const logoutUser = CatchAsyncError(async (req: Request, res: Response, ne
     }
 });
 
-
-// Actualizar token de acceso
+// Controlador para actualizar el token de acceso
 export const updateAccessToken = CatchAsyncError(async (
     req: Request,
     res: Response,
     next: NextFunction
-    ) => {
+) => {
     try {
+        // Obtiene el token de refresco desde las cookies
         const refresh_token = req.cookies.refresh_token as string;
-        const decoded = jwt.verify(refresh_token,
-            process.env.REFRESH_TOKEN as string) as { id: string };
-
-        const message = 'Error no se pudo actualizar el token'
+        
+        // Verifica el token de refresco
+        const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as { id: string };
+        
+        const message = 'Error no se pudo actualizar el token';
         if (!decoded) {
             return next(new ErrorHandler(message, 400));
         }
 
+        // Recupera la sesión del usuario desde Redis
         const sesion = await redis.get(decoded.id as string);
         if (!sesion) {
             return next(new ErrorHandler(message, 400));
@@ -197,18 +199,20 @@ export const updateAccessToken = CatchAsyncError(async (
         
         const user = JSON.parse(sesion);
 
-        const accessToken = jwt.sign({id: user._id}, process.env.ACCESS_TOKEN as string, {
+        // Genera un nuevo token de acceso y refresco
+        const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN as string, {
             expiresIn: '5m'
         });
 
-        const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_TOKEN as string, {
+        const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN as string, {
             expiresIn: '3d'
         });
 
         req.user = user;
 
+        // Guarda los nuevos tokens en cookies
         res.cookie('access_token', accessToken, accessTokenOptions);
-        res.cookie('refresh_token', refreshToken, refreshTokenOptions );
+        res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
         res.status(200).json({
             success: 'Success',
@@ -221,7 +225,7 @@ export const updateAccessToken = CatchAsyncError(async (
     }
 });
 
-// Controlador para obtener la información del usuario
+// Controlador para obtener la información del usuario autenticado
 export const getUserInfo = CatchAsyncError(async (
     req: Request,
     res: Response,
@@ -230,29 +234,29 @@ export const getUserInfo = CatchAsyncError(async (
     try {
         const userId = req.user?._id?.toString() || '';
         getUserById(userId, res);
-
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
 });
 
+// Interface para la autenticación social
 interface ISocialAuthBody {
     email: string;
     name: string;
     avatar: string;
 }
 
-
-
-// Social authorization
+// Controlador para autenticación social
 export const socialAuth = CatchAsyncError(async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    try{
+    try {
         const { email, name, avatar } = req.body as ISocialAuthBody;
         const user = await userModel.findOne({ email });
+        
+        // Si el usuario no existe, lo crea; si existe, genera un nuevo token de acceso
         if (!user) {
             const newUser = await userModel.create({ email, name, avatar });
             sendToken(newUser, 200, res);
@@ -264,84 +268,85 @@ export const socialAuth = CatchAsyncError(async (
     }
 });
 
-// Actualizar información de usuario
+// Interface para actualizar la información del usuario
 interface IUpdateUserInfo {
     name?: string;
     email?: string;
 }
 
+// Controlador para actualizar la información del usuario
 export const updateUserInfo = CatchAsyncError(async (
     req: Request,
     res: Response,
     next: NextFunction
-)   => {
+) => {
     try {
         const { name, email } = req.body as IUpdateUserInfo;
         const userId = req.user?.id;
         const user = await userModel.findOne(userId);
 
+        // Verifica si el correo ya está en uso
         if (email && user) {
-            const isEmailExist = await userModel.findOne({email});
+            const isEmailExist = await userModel.findOne({ email });
             if (isEmailExist) {
                 return next(new ErrorHandler("El correo electrónico ya está en uso.", 400));
             }
             user.email = email;
-        };
+        }
 
         if (name && user) {
             user.name = name;
-        };
+        }
 
         await user?.save();
-
         await redis.set(userId, JSON.stringify(user));
 
-        res.status(201).json(
-            {
-                success: true,
-                message: "Información del usuario actualizada correctamente",
-                user,
-            }
-        );
-
+        res.status(201).json({
+            success: true,
+            message: "Información del usuario actualizada correctamente",
+            user,
+        });
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     } 
 });
 
-// Actualizar contraseña
+// Interface para actualizar la contraseña
 interface IUpdatePassword {
     oldPassword: string;
     newPassword: string;
 }
 
+// Controlador para actualizar la contraseña del usuario
 export const updatePassword = CatchAsyncError(async (
     req: Request,
     res: Response,
     next: NextFunction
-)   => {
+) => {
     try {
         const { oldPassword, newPassword } = req.body as IUpdatePassword;
 
-        if( !oldPassword || !newPassword) {
-            return next(new ErrorHandler("Los campos estan vacios, porfavor introduzca su contraseña antigua y la nueva",400));
-        };
+        // Verifica que ambos campos estén completos
+        if (!oldPassword || !newPassword) {
+            return next(new ErrorHandler("Los campos están vacíos, por favor introduzca su contraseña antigua y la nueva", 400));
+        }
 
+        // Busca el usuario y verifica la contraseña actual
         const user = await userModel.findById(req.user?._id).select("+password");
         const isPasswordMatch = await user?.comparePasswords(oldPassword);
 
-        if(user?.password == undefined) {
-            return next(new ErrorHandler("Usuario o contraseña invalda, debes ingresar la contraseña actual", 400));
-        };
+        if (user?.password == undefined) {
+            return next(new ErrorHandler("Usuario o contraseña inválida, debes ingresar la contraseña actual", 400));
+        }
         
         if (!isPasswordMatch) {
             return next(new ErrorHandler("Contraseña antigua no válida o incorrecta", 400));
-        };
+        }
 
         if (user) {
             user.password = newPassword;
             await user.save();
-        };
+        }
 
         await redis.set(String(user?._id), JSON.stringify(user));
 
@@ -350,9 +355,7 @@ export const updatePassword = CatchAsyncError(async (
             message: "Contraseña actualizada correctamente",
             user,
         });
-
-    
-    } catch (error: any){
+    } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
 });
