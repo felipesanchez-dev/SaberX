@@ -274,7 +274,7 @@ export const updateUserInfo = CatchAsyncError(async (
     req: Request,
     res: Response,
     next: NextFunction
-)=> {
+)   => {
     try {
         const { name, email } = req.body as IUpdateUserInfo;
         const userId = req.user?.id;
@@ -286,11 +286,11 @@ export const updateUserInfo = CatchAsyncError(async (
                 return next(new ErrorHandler("El correo electrónico ya está en uso.", 400));
             }
             user.email = email;
-        }
+        };
 
         if (name && user) {
             user.name = name;
-        }
+        };
 
         await user?.save();
 
@@ -302,7 +302,7 @@ export const updateUserInfo = CatchAsyncError(async (
                 message: "Información del usuario actualizada correctamente",
                 user,
             }
-        )
+        );
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
@@ -319,29 +319,29 @@ export const updatePassword = CatchAsyncError(async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+)   => {
     try {
         const { oldPassword, newPassword } = req.body as IUpdatePassword;
 
         if( !oldPassword || !newPassword) {
-            return next(new ErrorHandler("Los campos estan vacios, porfavor introduzca su contraseña antigua y la nueva",400))
-        }
+            return next(new ErrorHandler("Los campos estan vacios, porfavor introduzca su contraseña antigua y la nueva",400));
+        };
 
-        const user = await userModel.findById(req.user?._id).select("+password")
+        const user = await userModel.findById(req.user?._id).select("+password");
         const isPasswordMatch = await user?.comparePasswords(oldPassword);
 
         if(user?.password == undefined) {
             return next(new ErrorHandler("Usuario o contraseña invalda, debes ingresar la contraseña actual", 400));
-        }
+        };
         
         if (!isPasswordMatch) {
             return next(new ErrorHandler("Contraseña antigua no válida o incorrecta", 400));
-        }
+        };
 
         if (user) {
             user.password = newPassword;
             await user.save();
-        }
+        };
 
         await redis.set(String(user?._id), JSON.stringify(user));
 
@@ -355,4 +355,4 @@ export const updatePassword = CatchAsyncError(async (
     } catch (error: any){
         return next(new ErrorHandler(error.message, 400));
     }
-})
+});
