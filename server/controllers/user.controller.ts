@@ -299,7 +299,7 @@ export const updateUserInfo = CatchAsyncError(async (
         res.status(201).json(
             {
                 success: true,
-                // message: "Información del usuario actualizada correctamente",
+                message: "Información del usuario actualizada correctamente",
                 user,
             }
         )
@@ -307,4 +307,51 @@ export const updateUserInfo = CatchAsyncError(async (
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     } 
+});
+
+// Actualizar contraseña
+interface IUpdatePassword {
+    oldPassword: string;
+    newPassword: string;
+}
+
+export const updatePassword = CatchAsyncError(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { oldPassword, newPassword } = req.body as IUpdatePassword;
+
+        if( !oldPassword || !newPassword) {
+            return next(new ErrorHandler("Los campos estan vacios, porfavor introduzca su contraseña antigua y la nueva",400))
+        }
+
+        const user = await userModel.findById(req.user?._id).select("+password")
+        const isPasswordMatch = await user?.comparePasswords(oldPassword);
+
+        if(user?.password == undefined) {
+            return next(new ErrorHandler("Usuario o contraseña invalda, debes ingresar la contraseña actual", 400));
+        }
+        
+        if (!isPasswordMatch) {
+            return next(new ErrorHandler("Contraseña antigua no válida o incorrecta", 400));
+        }
+
+        user?.password = newPassword;
+
+        await user?.save();
+
+        await redis.set(user?._id, JSON.stringify(user));
+
+        res.status(201).json({
+            success: true,
+            message: "Contraseña actualizada correctamente",
+            user,
+        });
+
+    
+    } catch (error: any){
+        return next(new ErrorHandler(error.message, 400));
+    }
 })

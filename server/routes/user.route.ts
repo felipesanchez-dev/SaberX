@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updateUserInfo } from '../controllers/user.controller';
+import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updatePassword, updateUserInfo } from '../controllers/user.controller';
 import { isAuthenticated } from '../middleware/auth';
 
 const userRouter = express.Router();
@@ -23,11 +23,13 @@ userRouter.get('/refresh', updateAccessToken);
 // Ruta para obtener el usuario actual
 userRouter.get('/me', isAuthenticated, getUserInfo);
 
-// Ruta para obtener datos visiables
+// Ruta para crear usuario sin contraseña
 userRouter.post('/social-auth', socialAuth)
 
-//
+// Ruta para actualizar datos sociales
 userRouter.put('/update-user-info', isAuthenticated, updateUserInfo)
 
+// Ruta para actualizar contraseña
+userRouter.put('/update-user-password', isAuthenticated, updatePassword)
 
 export default userRouter;
