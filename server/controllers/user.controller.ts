@@ -403,7 +403,7 @@ export const updateProfilePicture = CatchAsyncError(async (
         }
 
         await user?.save();
-        await redis.set(userIid, JSON.stringify(user));
+        await redis.set(String(userIid), JSON.stringify(user));
 
         res.status(201).json({
             success: true,
