@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updatePassword, updateUserInfo } from '../controllers/user.controller';
+import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updatePassword, updateUserInfo, updateProfilePicture } from '../controllers/user.controller';
 import { isAuthenticated } from '../middleware/auth';
 
 const userRouter = express.Router();
@@ -31,5 +31,8 @@ userRouter.put('/update-user-info', isAuthenticated, updateUserInfo);
 
 // Ruta para actualizar la contraseña del usuario autenticado
 userRouter.put('/update-user-password', isAuthenticated, updatePassword);
+
+// Ruta para actualizar la foto del usuario
+userRouter.put('/update-user-avatar', isAuthenticated, updateProfilePicture);
 
 export default userRouter;

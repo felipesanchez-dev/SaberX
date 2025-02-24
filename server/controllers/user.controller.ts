@@ -9,6 +9,7 @@ import sendEmail from '../utils/sendMail';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
 import { redis } from '../utils/redis';
 import { getUserById } from '../services/user.service';
+import cloudinary from 'cloudinary';
 require('dotenv').config();
 
 // Interfaz para definir la estructura esperada del cuerpo de la solicitud de registro
@@ -355,6 +356,61 @@ export const updatePassword = CatchAsyncError(async (
             message: "Contraseña actualizada correctamente",
             user,
         });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
+//  Interface para actualizar la foto de perfil
+interface IUpdateProfilePicture {
+    avatar: {
+        public_id: string;
+        url: string;
+    }
+}
+// Controlador para actualizar la foto de perfil
+export const updateProfilePicture = CatchAsyncError(async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { avatar } = req.body;
+        const userIid = req.user?._id;
+        const user = await userModel.findById(userIid);
+        if (avatar && user) {
+            if (user?.avatar?.public_id) {
+                await cloudinary.v2.uploader.destroy(user?.avatar?.public_id)
+                const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+                    folder: 'avatars',
+                        width: 150,
+                    });
+                    user.avatar = {
+                        public_id: myCloud.public_id,
+                        url: myCloud.secure_url,
+                    }
+
+            } else {
+            const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+                folder: 'avatars',
+                width: 150,
+            });
+            user.avatar = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+            }
+            }
+        }
+
+        await user?.save();
+        await redis.set(userIid, JSON.stringify(user));
+
+        res.status(201).json({
+            success: true,
+            message: "Foto de perfil actualizada correctamente",
+            user,
+        });
+
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
