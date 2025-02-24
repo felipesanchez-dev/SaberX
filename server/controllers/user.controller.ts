@@ -282,35 +282,45 @@ export const updateUserInfo = CatchAsyncError(async (
     next: NextFunction
 ) => {
     try {
+        // Extrae el nombre y el correo electrónico de la solicitud
         const { name, email } = req.body as IUpdateUserInfo;
         const userId = req.user?.id;
+
+        // Busca al usuario en la base de datos
         const user = await userModel.findOne(userId);
 
-        // Verifica si el correo ya está en uso
+        // Verifica si el correo electrónico ya está en uso por otro usuario
         if (email && user) {
             const isEmailExist = await userModel.findOne({ email });
             if (isEmailExist) {
                 return next(new ErrorHandler("El correo electrónico ya está en uso.", 400));
             }
-            user.email = email;
+            user.email = email; // Actualiza el correo del usuario
         }
 
+        // Si se proporciona un nuevo nombre, lo actualiza
         if (name && user) {
             user.name = name;
         }
 
+        // Guarda los cambios en la base de datos
         await user?.save();
+
+        // Guarda la información actualizada en Redis
         await redis.set(userId, JSON.stringify(user));
 
+        // Responde con éxito y devuelve un mensaje de confirmación
         res.status(201).json({
             success: true,
             message: "Información del usuario actualizada correctamente",
             user,
         });
     } catch (error: any) {
+        // Manejo de errores
         return next(new ErrorHandler(error.message, 400));
     } 
 });
+
 
 // Interface para actualizar la contraseña
 interface IUpdatePassword {
@@ -325,6 +335,7 @@ export const updatePassword = CatchAsyncError(async (
     next: NextFunction
 ) => {
     try {
+        // Extrae la contraseña antigua y la nueva desde la solicitud
         const { oldPassword, newPassword } = req.body as IUpdatePassword;
 
         // Verifica que ambos campos estén completos
@@ -332,42 +343,52 @@ export const updatePassword = CatchAsyncError(async (
             return next(new ErrorHandler("Los campos están vacíos, por favor introduzca su contraseña antigua y la nueva", 400));
         }
 
-        // Busca el usuario y verifica la contraseña actual
+        // Busca al usuario en la base de datos e incluye la contraseña en la consulta
         const user = await userModel.findById(req.user?._id).select("+password");
+
+        // Verifica si la contraseña ingresada coincide con la almacenada
         const isPasswordMatch = await user?.comparePasswords(oldPassword);
 
+        // Si el usuario no tiene contraseña almacenada, devuelve un error
         if (user?.password == undefined) {
             return next(new ErrorHandler("Usuario o contraseña inválida, debes ingresar la contraseña actual", 400));
         }
-        
+
+        // Si la contraseña no coincide, devuelve un error
         if (!isPasswordMatch) {
             return next(new ErrorHandler("Contraseña antigua no válida o incorrecta", 400));
         }
 
+        // Si el usuario es válido, actualiza la contraseña
         if (user) {
             user.password = newPassword;
             await user.save();
         }
 
+        // Guarda la información actualizada del usuario en Redis
         await redis.set(String(user?._id), JSON.stringify(user));
 
+        // Responde con éxito y devuelve un mensaje de confirmación
         res.status(201).json({
             success: true,
             message: "Contraseña actualizada correctamente",
             user,
         });
     } catch (error: any) {
+        // Manejo de errores
         return next(new ErrorHandler(error.message, 400));
     }
 });
 
-//  Interface para actualizar la foto de perfil
+// Interfaz para la estructura de la foto de perfil del usuario
 interface IUpdateProfilePicture {
     avatar: {
         public_id: string;
         url: string;
-    }
+    };
 }
+
+
 // Controlador para actualizar la foto de perfil
 export const updateProfilePicture = CatchAsyncError(async (
     req: Request,
@@ -375,36 +396,38 @@ export const updateProfilePicture = CatchAsyncError(async (
     next: NextFunction
 ) => {
     try {
+        // Extrae la nueva imagen de perfil del cuerpo de la solicitud
         const { avatar } = req.body;
+        // Obtiene el ID del usuario autenticado
         const userIid = req.user?._id;
+        // Busca al usuario en la base de datos
         const user = await userModel.findById(userIid);
-        if (avatar && user) {
-            if (user?.avatar?.public_id) {
-                await cloudinary.v2.uploader.destroy(user?.avatar?.public_id)
-                const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-                    folder: 'avatars',
-                        width: 150,
-                    });
-                    user.avatar = {
-                        public_id: myCloud.public_id,
-                        url: myCloud.secure_url,
-                    }
 
-            } else {
+        if (avatar && user) {
+            // Si el usuario ya tiene una foto de perfil, elimina la imagen anterior de Cloudinary
+            if (user?.avatar?.public_id) {
+                await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+            }
+
+            // Sube la nueva imagen a Cloudinary
             const myCloud = await cloudinary.v2.uploader.upload(avatar, {
                 folder: 'avatars',
                 width: 150,
             });
+
+            // Guarda la nueva foto de perfil en el modelo del usuario
             user.avatar = {
                 public_id: myCloud.public_id,
                 url: myCloud.secure_url,
-            }
-            }
+            };
         }
 
+        // Guarda los cambios en la base de datos
         await user?.save();
+        // Almacena la información del usuario en Redis para optimizar el acceso
         await redis.set(String(userIid), JSON.stringify(user));
 
+        // Responde con éxito y devuelve el usuario actualizado
         res.status(201).json({
             success: true,
             message: "Foto de perfil actualizada correctamente",
@@ -412,6 +435,7 @@ export const updateProfilePicture = CatchAsyncError(async (
         });
 
     } catch (error: any) {
+        // Manejo de errores
         return next(new ErrorHandler(error.message, 400));
     }
 });
