@@ -1,5 +1,5 @@
 {
-  "name": "codigo-abierto",
+  "name": "saberx",
   "version": "1.0.0",
   "description": "Backend de la plataforma de aprendizaje con cursos de programación y tecnología, con un enfoque en educación accesible y código abierto.",
   "main": "server.js",
