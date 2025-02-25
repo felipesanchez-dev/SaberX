@@ -1,7 +1,7 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
 interface IComment extends Document {
-    user: string,
+    user: object,
     comment: string;
 }
 
@@ -29,3 +29,21 @@ interface ICourseData extends Document {
     suggestion : string;
     questions: IComment[];
 }
+
+interface ICourse extends Document {
+    name: string;
+    description: string;
+    price?: number;
+    estimatedPrice?: number;
+    thumbnail: object;
+    tags: string;
+    level: string;
+    demoUrl: string;
+    benefits: {title: string}[];
+    prerequisites: {title: string}[];
+    reviews: IReview[];
+    courseData: ICourseData;
+    ratings?: number;
+    purchased: number;
+}
+
