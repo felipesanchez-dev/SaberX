@@ -3,6 +3,7 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 interface IComment extends Document {
     user: object,
     comment: string;
+    commentReplices?: IComment[];
 }
 
 interface IReview extends Document {
@@ -47,3 +48,35 @@ interface ICourse extends Document {
     purchased: number;
 }
 
+const reviewShema = new Schema<IReview>({
+    user: Object,
+    rating: {
+        type: Number,
+        default: 0,
+    },
+    comment: String,
+});
+
+const linkSchema = new Schema<ILink>({
+    title: String,
+    url: String,
+});
+
+const commentSchema = new Schema<IComment>({
+    user: Object,
+    comment: String,
+    commentReplices: [Object],
+});
+
+const courseDataSchema = new Schema<ICourseData>({
+    videoUrl: String,
+    videoThumbnail: Object,
+    title: String,
+    VideoSection: String,
+    description: String,
+    videoLength: Number,
+    videoPlayer: String,
+    links: [linkSchema],
+    suggestion: String,
+    questions: [commentSchema],
+});
