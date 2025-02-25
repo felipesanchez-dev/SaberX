@@ -12,14 +12,16 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/felipesanchez-dev/Codigo-Abierto"
+    "url": "https://github.com/felipesanchez-dev/SaberX"
   },
   "keywords": [
     "cursos",
     "programación",
     "tecnología",
     "aprendizaje",
-    "open-source"
+    "educación",
+    "accesible",
+    "plataforma"
   ],
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
