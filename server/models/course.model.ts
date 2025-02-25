@@ -27,5 +27,5 @@ interface ICourseData extends Document {
     videoPlayer: string;
     links: ILink[];
     suggestion : string;
-    comments: IComment[];
+    questions: IComment[];
 }
