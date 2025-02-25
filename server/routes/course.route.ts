@@ -13,7 +13,7 @@ courseRouter.post(
 );
 
 courseRouter.put(
-    '/edit-course', 
+    '/edit-course/:id', 
     isAuthenticated, // Verifica si el usuario está autenticado
     authorizeRoles('admin'), // Permite acceso solo a administradores
     editCourse // Controlador que maneja la edicion de cursos
