@@ -96,3 +96,62 @@ const courseDataSchema = new Schema<ICourseData>({
     suggestion: String,
     questions: [commentSchema],
 });
+
+// Esquema para la información principal del curso
+const courseSchema = new Schema<ICourse>({
+    name: {
+        type: String,
+        required: true, // Nombre del curso (obligatorio)
+    },
+    description: {
+        type: String,
+        required: true, // Descripción del curso (obligatorio)
+    },
+    price: {
+        type: Number,
+        required: false, // Precio del curso (opcional, por defecto gratuito)
+    },
+    estimatedPrice: {
+        type: Number,
+        required: false, // Precio estimado en caso de descuentos
+    },
+    thumbnail: {
+        public_id: {
+            type: String,
+            required: true, // ID de la imagen en el servidor
+        },
+        url: {
+            type: String,
+            required: true, // URL de la imagen del curso
+        },
+    },
+    tags: {
+        type: String,
+        required: true, // Etiquetas relacionadas con el curso
+    },
+    level: {
+        type: String,
+        required: true, // Nivel del curso (principiante, intermedio, avanzado)
+    },
+    demoUrl: {
+        type: String,
+        required: true, // URL de demostración del curso
+    },
+    benefits: [{ title: String }], // Beneficios que ofrece el curso
+    prerequisites: [{ title: String }], // Requisitos previos para tomar el curso
+    reviews: [reviewSchema], // Reseñas de los usuarios
+    courseData: [courseDataSchema], // Datos del curso (secciones, videos, preguntas)
+    ratings: { 
+        type: Number,
+        default: 0, // Puntuación promedio del curso (inicialmente 0)
+    },
+    purchased: {
+        type: Number,
+        default: 0, // Número de veces comprado
+    },
+});
+
+// Modelo de Mongoose para la colección de cursos
+const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
+
+export default CourseModel;
