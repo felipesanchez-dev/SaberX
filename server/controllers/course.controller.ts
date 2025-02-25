@@ -6,11 +6,7 @@ import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
 
 // Controlador para subir y crear un curso
-export const uploadCourse = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-)=> {
+export const uploadCourse = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction)=> {
     try{
         const data = req.body;
         const thumbnail = data.thumbnail
@@ -35,11 +31,7 @@ export const uploadCourse = CatchAsyncError(async (
 });
 
 // Controlador para editar un curso
-export const editCourse = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const editCourse = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const data = req.body;
         const thumbnail = data.thumbnail;
@@ -76,5 +68,42 @@ export const editCourse = CatchAsyncError(async (
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores
+    }
+});
+
+// Controlador para obtener un solo curso por su ID
+export const getSingleCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Busca el curso por ID y excluye datos sensibles o no necesarios
+        const course = await CourseModel.findById(req.params.id).select(
+            '-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links'
+        );
+
+        res.status(200).json({
+            message: 'Curso obtenido exitosamente',
+            success: true,
+            course,
+        });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores
+    }
+});
+
+// Obtener todos los cursos sin necesidad de haberlos comprado
+export const getAllCourses = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Busca todos los cursos y excluye información sensible o accesible solo para usuarios comprados
+        const courses = await CourseModel.find().select(
+            '-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links'
+        );
+
+        res.status(200).json({
+            message: 'Cursos obtenidos exitosamente',
+            success: true,
+            courses,
+        });
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores con mensaje adecuado
     }
 });

@@ -175,11 +175,7 @@ export const logoutUser = CatchAsyncError(async (req: Request, res: Response, ne
 });
 
 // Controlador para actualizar el token de acceso
-export const updateAccessToken = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateAccessToken = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         // Obtiene el token de refresco desde las cookies
         const refresh_token = req.cookies.refresh_token as string;
@@ -227,11 +223,7 @@ export const updateAccessToken = CatchAsyncError(async (
 });
 
 // Controlador para obtener la información del usuario autenticado
-export const getUserInfo = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getUserInfo = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const userId = req.user?._id?.toString() || '';
         getUserById(userId, res);
@@ -248,11 +240,7 @@ interface ISocialAuthBody {
 }
 
 // Controlador para autenticación social
-export const socialAuth = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const socialAuth = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { email, name, avatar } = req.body as ISocialAuthBody;
         const user = await userModel.findOne({ email });
@@ -276,11 +264,7 @@ interface IUpdateUserInfo {
 }
 
 // Controlador para actualizar la información del usuario
-export const updateUserInfo = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateUserInfo = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         // Extrae el nombre y el correo electrónico de la solicitud
         const { name, email } = req.body as IUpdateUserInfo;
@@ -329,11 +313,7 @@ interface IUpdatePassword {
 }
 
 // Controlador para actualizar la contraseña del usuario
-export const updatePassword = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updatePassword = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         // Extrae la contraseña antigua y la nueva desde la solicitud
         const { oldPassword, newPassword } = req.body as IUpdatePassword;
@@ -390,11 +370,7 @@ interface IUpdateProfilePicture {
 
 
 // Controlador para actualizar la foto de perfil
-export const updateProfilePicture = CatchAsyncError(async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateProfilePicture = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         // Extrae la nueva imagen de perfil del cuerpo de la solicitud
         const { avatar } = req.body;
