@@ -2,12 +2,12 @@ import { Response } from 'express';
 import CourseModel from '../models/course.model';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 
-// Crear un curso
+// Función para crear un curso (maneja errores de forma asíncrona)
 export const createCourse = CatchAsyncError(async (
-    data: any,
+    data: any, // Datos del curso recibidos
     res: Response
-)=> {
-    const course = await CourseModel.create(data);
+) => {
+    const course = await CourseModel.create(data); // Crea el curso en la base de datos
     res.status(201).json({
         message: 'Curso creado exitosamente',
         success: true,
