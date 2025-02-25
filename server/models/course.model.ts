@@ -86,7 +86,7 @@ const commentSchema = new Schema<IComment>({
 // Esquema para los datos del curso
 const courseDataSchema = new Schema<ICourseData>({
     videoUrl: String,
-    videoThumbnail: Object,
+    // videoThumbnail: Object,
     title: String,
     VideoSection: String,
     description: String,
@@ -118,11 +118,11 @@ const courseSchema = new Schema<ICourse>({
     thumbnail: {
         public_id: {
             type: String,
-            required: true, // ID de la imagen en el servidor
+            // required: true, // ID de la imagen en el servidor
         },
         url: {
             type: String,
-            required: true, // URL de la imagen del curso
+            // required: true, // URL de la imagen del curso
         },
     },
     tags: {
