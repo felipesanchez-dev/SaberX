@@ -81,13 +81,17 @@ export const getSingleCourse = CatchAsyncError(async (req: Request, res: Respons
         const isCacheExist = await redis.get(courseId);
 
         if (isCacheExist) {
-            const course = JSON.parse(isCacheExist);
-            return res.status(200).json({
-                success: true,
-                message: "Curso cargado desde la memoria del cache (Se evito una consulta ala base de datos innecesaria)",
-                cached: true, // Indica que la respuesta proviene de la caché
-                course,
-            });
+            try {
+                const course = JSON.parse(isCacheExist);
+                return res.status(200).json({
+                    success: true,
+                    message: "Curso cargado desde la memoria del caché (Se evitó una consulta a la base de datos innecesaria)",
+                    cached: true, // Indica que la respuesta proviene de la caché
+                    course,
+                });
+            } catch (error) {
+                console.error("Error al parsear datos de Redis:", error);
+            }
         }
 
         // Si no está en caché, busca el curso en la base de datos y excluye datos sensibles
@@ -114,6 +118,7 @@ export const getSingleCourse = CatchAsyncError(async (req: Request, res: Respons
         });
 
     } catch (error: any) {
+        console.error("Error en getSingleCourse:", error);
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores
     }
 });
@@ -121,18 +126,72 @@ export const getSingleCourse = CatchAsyncError(async (req: Request, res: Respons
 // Obtener todos los cursos sin necesidad de haberlos comprado
 export const getAllCourses = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Busca todos los cursos y excluye información sensible o accesible solo para usuarios comprados
+        // Verifica si los cursos están en caché
+        const isCacheExist = await redis.get('allCourses');
+
+        if (isCacheExist) {
+            try {
+                const courses = JSON.parse(isCacheExist);
+                return res.status(200).json({
+                    success: true,
+                    message: "Cursos cargados desde la memoria del caché (Se evitó una consulta a la base de datos innecesaria)",
+                    cached: true,
+                    courses,
+                });
+            } catch (error) {
+                console.error("Error al parsear datos de Redis:", error);
+            }
+        }
+
+        // Si no están en caché, obtener de la base de datos
         const courses = await CourseModel.find().select(
             '-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links'
         );
 
-        res.status(200).json({
+        // Si no hay cursos en la base de datos, responder sin caché
+        if (!courses.length) {
+            return res.status(404).json({
+                message: 'No hay cursos disponibles',
+                success: false,
+            });
+        }
+
+        // Guardar en caché con expiración de 1 hora
+        await redis.setex('allCourses', 3600, JSON.stringify(courses));
+
+        return res.status(200).json({
             message: 'Cursos obtenidos exitosamente',
             success: true,
+            cached: false,
             courses,
         });
 
     } catch (error: any) {
-        return next(new ErrorHandler(error.message, 500)); // Manejo de errores con mensaje adecuado
+        console.error("Error en getAllCourses:", error);
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores
     }
 });
+
+// get course content --- only for valid courses user
+export const getCourseByUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userCourseList = req.user?.courses;
+        const courseId = req.params.id;
+
+        const courseExists = userCourseList?.find((course: any) => course._id.toString() === courseId);
+
+        if (!courseExists) {
+            return next(new ErrorHandler("No eres elegible para acceder a este curso", 404));
+        };
+
+        const course = await CourseModel.findById(courseId);
+        const content = course?.courseData;
+        return res.status(200).json({
+            message: 'Contenido del curso obtenido exitosamente',
+            success: true,
+            content,
+        });
+    } catch (error : any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores
+    }
+})
