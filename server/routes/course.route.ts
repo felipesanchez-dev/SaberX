@@ -1,5 +1,5 @@
 import express from 'express';
-import { editCourse, getAllCourses, getSingleCourse, uploadCourse, getCourseByUser, addQuestion } from '../controllers/course.controller';
+import { editCourse, getAllCourses, getSingleCourse, uploadCourse, getCourseByUser, addQuestion, addAnswer } from '../controllers/course.controller';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 const courseRouter = express.Router();
@@ -44,6 +44,13 @@ courseRouter.put(
     '/add-question',
     isAuthenticated,  // Middleware que verifica si el usuario está autenticado
     addQuestion       // Controlador que maneja la adición de preguntas
+);
+
+// Ruta para añadir una respuesta a una pregunta dentro de un curso
+courseRouter.put(
+    '/add-answer',   // Endpoint correcto para agregar una respuesta
+    isAuthenticated, // Middleware que verifica si el usuario está autenticado
+    addAnswer        // Controlador que maneja la lógica para añadir la respuesta
 );
 
 export default courseRouter;

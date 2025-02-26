@@ -6,6 +6,9 @@ import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
+import ejs from 'ejs';
+import path from 'path';
+import sendEmail from '../utils/sendMail';
 
 // Controlador para subir y crear un curso
 export const uploadCourse = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction)=> {
@@ -253,5 +256,97 @@ export const addQuestion = CatchAsyncError(async (req: Request, res: Response, n
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores en caso de falla
+    }
+});
+
+// Interfaz para los datos requeridos al agregar una respuesta a una pregunta del curso
+interface IAddAnswerData {
+    answer: string,   // Respuesta proporcionada por el usuario
+    courseId: string, // ID del curso donde se encuentra la pregunta
+    contentId: string,// ID del contenido dentro del curso
+    questionId: string,// ID de la pregunta a la que se responderá
+}
+
+// Controlador para añadir una respuesta a una pregunta dentro de un curso
+export const addAnswer = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Extrae los datos de la solicitud
+        const { answer, courseId, contentId, questionId }: IAddAnswerData = req.body;
+
+        // Busca el curso en la base de datos usando su ID
+        const course = await CourseModel.findById(courseId);
+
+        // Verifica si el `contentId` es un ID válido de MongoDB
+        if (!mongoose.Types.ObjectId.isValid(contentId)) {
+            return next(new ErrorHandler("El contenido no tiene un ID válido", 400)); // Error 400 (Bad Request)
+        };
+        
+        // Busca el contenido dentro del curso usando `contentId`
+        const courseContent = ((course?.courseData as unknown) as any[])?.find((item: any) => item._id.equals(contentId));
+
+        // Si el contenido no existe dentro del curso, devuelve un error
+        if (!courseContent) {
+            return next(new ErrorHandler("El curso no contiene este contenido", 404)); // Error 404 (Not Found)
+        };
+
+        // Busca la pregunta dentro del contenido usando `questionId`
+        const question = courseContent?.questions?.find((item: any) => item._id.equals(questionId));
+
+        // Si la pregunta no existe dentro del curso, devuelve un error
+        if (!question) {
+            return next(new ErrorHandler("El curso no contiene esta pregunta", 404)); // Error 404 (Not Found)
+        };
+
+        // Crea un nuevo objeto de respuesta
+        const newAnswer: any = {
+            user: req.user, // Usuario que responde la pregunta
+            answer,         // Contenido de la respuesta
+        };
+
+        // Agrega la nueva respuesta a la lista de respuestas de la pregunta
+        question.questionReplices.push(newAnswer);
+
+        // Guarda el curso actualizado en la base de datos
+        await course?.save();
+        
+        // Verifica si el usuario que responde es el mismo que hizo la pregunta
+        if (req.user?.id === question.user._id) {
+            // Si el usuario responde su propia pregunta, no es necesario enviar una notificación
+            // Aquí podrías agregar lógica para notificaciones internas si es necesario
+        } else {
+            // Si la respuesta es de otro usuario, se enviará una notificación al creador de la pregunta
+            
+            // Datos para la plantilla de correo electrónico
+            const data = {
+                name: question.user.name, // Nombre del usuario que hizo la pregunta
+                title: courseContent.title, // Título del contenido donde está la pregunta
+            };
+
+            // Renderiza el contenido del correo usando una plantilla EJS
+            const html = await ejs.renderFile(path.join(__dirname, '../mails/question-reply.ejs'), data);
+
+            try {
+                // Envía el correo de notificación al usuario que hizo la pregunta
+                await sendEmail({
+                    email: question.user.email,
+                    subject: 'Se ha añadido respuesta a tu pregunta en uno de nuestros cursos',
+                    template: 'question-reply.ejs',
+                    data,
+                });
+
+            } catch (error: any) {
+                return next(new ErrorHandler(error.message, 500)); // Manejo de errores en el envío del correo
+            }
+
+            // Respuesta exitosa con mensaje de notificación enviada
+            res.status(200).json({
+                message: 'Respuesta añadida exitosamente, se ha enviado un mensaje de notificación',
+                success: true,
+                course,
+            });
+        }
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores generales
     }
 });
