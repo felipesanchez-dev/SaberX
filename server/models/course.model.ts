@@ -14,7 +14,7 @@ interface IComment extends Document {
  * Representa una reseña con calificación y comentarios.
  */
 interface IReview extends Document {
-    user: string;
+    user: IUser;
     rating: number;
     comment: string;
     commentReplices: IComment[];
@@ -67,8 +67,12 @@ interface ICourse extends Document {
 // Esquema para las reseñas del curso
 const reviewSchema = new Schema<IReview>({
     user: Object,
-    rating: { type: Number, default: 0 },
+    rating: { 
+        type: Number,
+        default: 0 
+    },
     comment: String,
+    commentReplices: [Object],
 });
 
 // Esquema para los enlaces del curso

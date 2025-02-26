@@ -1,5 +1,5 @@
 import express from 'express';
-import { editCourse, getAllCourses, getSingleCourse, uploadCourse, getCourseByUser, addQuestion, addAnswer } from '../controllers/course.controller';
+import { editCourse, getAllCourses, getSingleCourse, uploadCourse, getCourseByUser, addQuestion, addAnswer, addReview,addReplayToReview } from '../controllers/course.controller';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 const courseRouter = express.Router();
@@ -52,5 +52,21 @@ courseRouter.put(
     isAuthenticated, // Middleware que verifica si el usuario está autenticado
     addAnswer        // Controlador que maneja la lógica para añadir la respuesta
 );
+
+// Ruta para añadir una reseña a un curso
+courseRouter.put(
+    '/add-review/:id',   // Endpoint que recibe el ID del curso como parámetro
+    isAuthenticated,     // Middleware que verifica si el usuario está autenticado
+    addReview            // Controlador que maneja la lógica de añadir una reseña
+);
+
+// Ruta para 
+courseRouter.put(
+    '/add-reply',   
+    isAuthenticated,     // Middleware que verifica si el usuario está autenticado
+    authorizeRoles('admin'), // Restringe el acceso solo a administradores
+    addReplayToReview            // Controlador que maneja
+);
+
 
 export default courseRouter;

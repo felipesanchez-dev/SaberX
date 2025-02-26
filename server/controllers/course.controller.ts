@@ -350,3 +350,128 @@ export const addAnswer = CatchAsyncError(async (req: Request, res: Response, nex
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores generales
     }
 });
+
+// Interfaz para la estructura de datos de una reseña
+interface IAddReviewData {
+    review: string,    // Texto de la reseña
+    courseId: string,  // ID del curso al que se añade la reseña
+    rating: number,    // Calificación otorgada (ejemplo: de 1 a 5 estrellas)
+    userId: string,    // ID del usuario que deja la reseña
+}
+
+// Controlador para agregar una reseña a un curso
+export const addReview = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userCourseList = req.user?.courses; // Lista de cursos en los que el usuario está inscrito
+        const courseId = req.params.id; // ID del curso extraído de los parámetros de la URL
+
+        // Verifica si el usuario tiene acceso al curso revisando su lista de cursos
+        const courseExists = userCourseList?.some((course: any) => course._id.toString() === courseId.toString());
+        
+        if (!courseExists) {
+            return next(new ErrorHandler("Usted no tiene acceso válido a este curso", 404)); 
+        };
+
+        // Busca el curso en la base de datos
+        const course = await CourseModel.findById(courseId);
+        if (!course) {
+            return next(new ErrorHandler("Curso no encontrado", 404));
+        }
+
+        // Extrae la reseña y calificación del cuerpo de la solicitud
+        const { review, rating } = req.body as IAddReviewData;
+
+        // Crea la estructura de datos para la nueva reseña
+        const reviewData: any = {
+            user: req.user,  // Usuario que realiza la reseña
+            rating,          // Calificación dada al curso
+            comment: review, // Texto de la reseña
+        };
+
+        // Agrega la reseña al array de reseñas del curso
+        course.reviews.push(reviewData);
+
+        // Calcula el nuevo promedio de calificaciones
+        let avg = 0;
+        course.reviews.forEach((rev: any) => {
+            avg += rev.rating;
+        });
+
+        // Actualiza el campo `ratings` del curso con el nuevo promedio
+        if (course.reviews.length > 0) {
+            course.ratings = avg / course.reviews.length; 
+            // Ejemplo: si hay dos reseñas con calificaciones de 5 y 4, la media será (5 + 4) / 2 = 4.5  
+        };
+
+        // Guarda los cambios en la base de datos
+        await course.save();
+
+        // Crea una notificación (puedes implementarla si es necesario)
+        const notification = {
+            title: 'Nueva Reseña Recibida',
+            message: `${req.user?.name} ha dejado una reseña en el curso ${course?.name}`,
+        };
+
+        res.status(200).json({
+            message: 'Reseña añadida exitosamente',
+            success: true,
+            course,
+        });
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores generales
+    }
+});
+
+// Interfaz para los datos de la respuesta a una reseña
+interface IAddReviewData {
+    comment: string,  // Comentario que se agregará como respuesta
+    courseId: string, // ID del curso donde está la reseña
+    reviewId: string, // ID de la reseña a la que se responderá
+}
+
+export const addReplayToReview = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Extraer los datos de la solicitud
+        const { comment, courseId, reviewId } = req.body as IAddReviewData;
+
+        // Buscar el curso en la base de datos por su ID
+        const course = await CourseModel.findById(courseId);
+
+        if (!course) {
+            return next(new ErrorHandler("Curso no encontrado", 404)); // Retorna error si el curso no existe
+        };
+
+        // Buscar la reseña dentro del curso usando su ID
+        const review = course.reviews?.find((rev: any) => rev._id.toString() === reviewId);
+
+        if (!review) {
+            return next(new ErrorHandler("Reseña no encontrada", 404)); // Retorna error si la reseña no existe
+        };
+
+        // Crear el objeto de respuesta (comentario dentro de la reseña)
+        const replyData: any = {
+            user: req.user, // Usuario autenticado que está respondiendo
+            comment, // Contenido de la respuesta
+        };
+        
+        if (!review.commentReplices) {
+            review.commentReplices = [];
+        }
+
+        // ERROR: Se está agregando la respuesta a la lista de reseñas del curso en lugar de a la reseña específica
+        review.commentReplices?.push(replyData);
+
+        // Guardar los cambios en la base de datos
+        await course.save();
+
+        res.status(200).json({
+            message: 'Comentario añadido exitosamente',
+            success: true,
+            course,
+        });
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores generales
+    }
+});
