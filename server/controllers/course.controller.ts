@@ -5,6 +5,7 @@ import cloudinary from 'cloudinary'
 import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
 import { redis } from '../utils/redis';
+import mongoose from 'mongoose';
 
 // Controlador para subir y crear un curso
 export const uploadCourse = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction)=> {
@@ -198,5 +199,59 @@ export const getCourseByUser = CatchAsyncError(async (req: Request, res: Respons
     } catch (error: any) {
         console.error("Error en getCourseByUser:", error);
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores
+    }
+});
+
+// Interfaz para definir la estructura de los datos que se reciben al agregar una pregunta
+interface IAddQuestionData {
+    question: string;  // Pregunta formulada por el usuario
+    courseId: string;  // ID del curso donde se agregará la pregunta
+    contentId: string; // ID del contenido específico dentro del curso
+}
+
+// Controlador para añadir una pregunta en un contenido de un curso
+export const addQuestion = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Extrae los datos de la petición
+        const { question, courseId, contentId }: IAddQuestionData = req.body;
+
+        // Busca el curso en la base de datos
+        const course = await CourseModel.findById(courseId);
+
+        // Verifica si el `contentId` es un ID válido de MongoDB
+        if (!mongoose.Types.ObjectId.isValid(contentId)) {
+            return next(new ErrorHandler("El contenido no tiene un ID válido", 400)); // Error 400 (Bad Request)
+        }
+
+        // Busca el contenido dentro del curso usando el `contentId`
+        const courseContent = ((course?.courseData as unknown) as any[])?.find((item: any) => item._id.equals(contentId));
+
+        // Si el contenido no existe dentro del curso, devuelve un error
+        if (!courseContent) {
+            return next(new ErrorHandler("El curso no contiene este contenido", 404)); // Error 404 (Not Found)
+        }
+
+        // Crea un nuevo objeto de pregunta
+        const newQuestion: any = {
+            user: req.user,   // Asocia la pregunta al usuario que la hizo
+            question,         // Pregunta que se está agregando
+            questionReplices: [], // Inicializa un array vacío para las respuestas
+        };
+
+        // Agrega la nueva pregunta dentro del contenido del curso
+        courseContent.questions.push(newQuestion);
+
+        // Guarda los cambios en la base de datos
+        await course?.save();
+
+        // Responde con éxito y retorna el curso actualizado
+        res.status(200).json({
+            message: 'Pregunta añadida exitosamente',
+            success: true,
+            course,
+        });
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500)); // Manejo de errores en caso de falla
     }
 });

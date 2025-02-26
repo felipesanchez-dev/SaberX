@@ -5,8 +5,8 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
  */
 interface IComment extends Document {
     user: object;
-    comment: string;
-    commentReplices?: IComment[];
+    question: string;
+    questionReplices?: IComment[];
 }
 
 /**
@@ -79,8 +79,8 @@ const linkSchema = new Schema<ILink>({
 // Esquema para los comentarios y sus respuestas
 const commentSchema = new Schema<IComment>({
     user: Object,
-    comment: String,
-    commentReplices: [Object],
+    question: String,
+    questionReplices: [Object],
 });
 
 // Esquema para los datos del curso

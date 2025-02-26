@@ -1,5 +1,5 @@
 import express from 'express';
-import { editCourse, getAllCourses, getSingleCourse, uploadCourse, getCourseByUser } from '../controllers/course.controller';
+import { editCourse, getAllCourses, getSingleCourse, uploadCourse, getCourseByUser, addQuestion } from '../controllers/course.controller';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 const courseRouter = express.Router();
@@ -32,9 +32,18 @@ courseRouter.get(
     getAllCourses // Controlador que obtiene todos los cursos excluyendo datos restringidos
 );
 
+// Ruta para obtener el contenido del curso por ID (solo accesible para usuarios autenticados)
 courseRouter.get(
     '/get-course-content/:id',
-    isAuthenticated,  // Verifica si el usuario está autenticado
+    isAuthenticated,  // Middleware que verifica si el usuario está autenticado
     getCourseByUser   // Controlador que obtiene el contenido del curso por ID
 );
+
+// Ruta para añadir una pregunta a un contenido dentro de un curso
+courseRouter.put(
+    '/add-question',
+    isAuthenticated,  // Middleware que verifica si el usuario está autenticado
+    addQuestion       // Controlador que maneja la adición de preguntas
+);
+
 export default courseRouter;
