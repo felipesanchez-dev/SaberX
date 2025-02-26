@@ -455,20 +455,21 @@ export const addReplayToReview = CatchAsyncError(async (req: Request, res: Respo
             comment, // Contenido de la respuesta
         };
         
+        // Verificar si la reseña tiene un arreglo de respuestas, si no, inicializarlo
         if (!review.commentReplices) {
-            review.commentReplices = [];
+            review.commentReplices = []; // Inicializa el arreglo si no existe
         }
 
-        // ERROR: Se está agregando la respuesta a la lista de reseñas del curso en lugar de a la reseña específica
-        review.commentReplices?.push(replyData);
+        // Agregar la respuesta dentro de la lista de respuestas de la reseña
+        review.commentReplices.push(replyData);
 
         // Guardar los cambios en la base de datos
         await course.save();
 
         res.status(200).json({
-            message: 'Comentario añadido exitosamente',
+            message: 'Comentario añadido exitosamente', // Mensaje de éxito
             success: true,
-            course,
+            course, // Retornar el curso actualizado
         });
 
     } catch (error: any) {
