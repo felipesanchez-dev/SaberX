@@ -4,6 +4,7 @@ import ErrorHandler from '../utils/ErrorHandler';
 import cloudinary from 'cloudinary'
 import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
+import { redis } from '../utils/redis';
 
 // Controlador para subir y crear un curso
 export const uploadCourse = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction)=> {
@@ -71,19 +72,47 @@ export const editCourse = CatchAsyncError(async ( req: Request, res: Response, n
     }
 });
 
-// Controlador para obtener un solo curso por su ID
+// Controlador para obtener un solo curso por su ID (con caché en Redis para optimizar rendimiento)
 export const getSingleCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Busca el curso por ID y excluye datos sensibles o no necesarios
-        const course = await CourseModel.findById(req.params.id).select(
+        const courseId = req.params.id;
+
+        // Verifica si el curso ya está en caché para evitar consultas innecesarias a la base de datos
+        const isCacheExist = await redis.get(courseId);
+
+        if (isCacheExist) {
+            const course = JSON.parse(isCacheExist);
+            return res.status(200).json({
+                success: true,
+                message: "Curso cargado desde la memoria del cache (Se evito una consulta ala base de datos innecesaria)",
+                cached: true, // Indica que la respuesta proviene de la caché
+                course,
+            });
+        }
+
+        // Si no está en caché, busca el curso en la base de datos y excluye datos sensibles
+        const course = await CourseModel.findById(courseId).select(
             '-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links'
         );
+
+        // Si el curso no se encuentra, responder sin guardar en caché
+        if (!course) {
+            return res.status(404).json({
+                message: 'Curso no encontrado',
+                success: false,
+            });
+        }
+
+        // Almacena en caché la respuesta con un tiempo de expiración de 1 hora (3600 segundos)
+        await redis.setex(courseId, 3600, JSON.stringify(course));
 
         res.status(200).json({
             message: 'Curso obtenido exitosamente',
             success: true,
+            cached: false, // Indica que la respuesta proviene de la base de datos
             course,
         });
+
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores
     }
