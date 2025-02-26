@@ -171,27 +171,32 @@ export const getAllCourses = CatchAsyncError(async (req: Request, res: Response,
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores
     }
 });
-
-// get course content --- only for valid courses user
 export const getCourseByUser = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userCourseList = req.user?.courses;
+        const userCourseList = req.user?.courses || [];
         const courseId = req.params.id;
 
-        const courseExists = userCourseList?.find((course: any) => course._id.toString() === courseId);
+        // Verifica si el usuario tiene acceso al curso
+        const courseExists = userCourseList.find((course: any) => course._id.toString() === courseId);
 
         if (!courseExists) {
-            return next(new ErrorHandler("No eres elegible para acceder a este curso", 404));
-        };
+            return next(new ErrorHandler("No eres elegible para acceder a este curso", 403)); // Código 403 (Prohibido) es más adecuado
+        }
 
+        // Buscar curso en la base de datos
         const course = await CourseModel.findById(courseId);
-        const content = course?.courseData;
+
+        if (!course) {
+            return next(new ErrorHandler("Curso no encontrado", 404));
+        }
+
         return res.status(200).json({
             message: 'Contenido del curso obtenido exitosamente',
             success: true,
-            content,
+            content: course.courseData,
         });
-    } catch (error : any) {
+    } catch (error: any) {
+        console.error("Error en getCourseByUser:", error);
         return next(new ErrorHandler(error.message, 500)); // Manejo de errores
     }
-})
+});

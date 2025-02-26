@@ -32,11 +32,9 @@ courseRouter.get(
     getAllCourses // Controlador que obtiene todos los cursos excluyendo datos restringidos
 );
 
-// Ruta para obtener el contenido del curso por ID
 courseRouter.get(
     '/get-course-content/:id',
-    isAuthenticated, // Verifica si el usuario está autenticado
-    getCourseByUser // Controlador que obtiene el contenido del curso por id
+    isAuthenticated,  // Verifica si el usuario está autenticado
+    getCourseByUser   // Controlador que obtiene el contenido del curso por ID
 );
-
 export default courseRouter;
