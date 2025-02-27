@@ -7,7 +7,7 @@ export const createCourse = CatchAsyncError(async (
     data: any, // Datos del curso recibidos
     res: Response
 ) => {
-    const course = await CourseModel.create(data); // Crea el curso en la base de datos
+    const course = await CourseModel.create(data);
     res.status(201).json({
         message: 'Curso creado exitosamente',
         success: true,

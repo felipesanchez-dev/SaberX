@@ -6,7 +6,6 @@ import { CatchAsyncError } from "./catchAsyncError";
 require('dotenv').config();
 
 
-// Middleware para verificar la autenticación del usuario
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { access_token } = req.cookies;
@@ -15,7 +14,6 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
             return next(new ErrorHandler("Por favor, inicie sesión", 401));
         }
 
-        // Verifica que la clave secreta esté definida
         const secretKey = process.env.ACCESS_TOKEN;
         if (!secretKey) {
             console.error("Falta la variable de entorno ACCESS_TOKEN");
@@ -36,14 +34,13 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
             return next(new ErrorHandler("El token de acceso no contiene información válida", 400));
         }
 
-        // Obtiene el usuario desde Redis
         const user = await redis.get(String(decoded.id));
         if (!user) {
             return next(new ErrorHandler("Usuario no encontrado o sesión expirada", 404));
         }
 
-        req.user = JSON.parse(user); // Asigna el usuario al request
-        next(); // Continúa con la ejecución
+        req.user = JSON.parse(user); 
+        next(); 
 
     } catch (error) {
         console.error("Error en autenticación:", error);
@@ -52,7 +49,6 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
 };
 
 
-// Este middleware se utiliza para validar el rol de usuario
 export const authorizeRoles = (...roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!roles.includes(req.user?.role || '')) {
