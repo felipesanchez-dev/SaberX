@@ -19,9 +19,9 @@ export const createOrder = CatchAsyncError(async (req: Request, res: Response, n
 
         const courseExistInUser = user?.courses.some((course: any) => course._id.toString() === courseId);
 
-        if (!courseExistInUser) {
-            return next(new ErrorHandler("Usted ya cuenta con este curso", 400));
-        };
+        if (courseExistInUser) {
+            return next(new ErrorHandler("El usuario ya tiene este curso en su cuenta", 400));
+        };        
 
         const course = await CourseModel.findById(courseId);
 
@@ -32,25 +32,24 @@ export const createOrder = CatchAsyncError(async (req: Request, res: Response, n
         const data:any = {
             courseId: course._id,
             userId: user?._id,
+            payment_info,
         };
-        newOrder(data, res, next);
 
         const mailData = {
             order: {
-                _id: (course._id as string).slice(0,6),
+                _id: (course._id as any).toString().slice(0, 6),
                 name: course.name,
                 price: course.price,
-                date: new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}),
+                date: new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }),
             }
         };
-
+        
         const html = await ejs.renderFile(path.join(__dirname, '../mails/order-confirmation.ejs'),{order:mailData});
-
         try {
             if (user) {
                 await sendEmail({
                     email: user.email,
-                    subject: 'Los cursos que solicitaste han sido agregados con exito FELICIDADES!',
+                    subject: '🎉 ¡Felicidades! Tus cursos han sido agregados con éxito 🚀',
                     template: 'order-confirmation.ejs',
                     data: mailData,
                 });
@@ -71,11 +70,12 @@ export const createOrder = CatchAsyncError(async (req: Request, res: Response, n
             message: `Tienes un nuevo pedido de ${course?.name}`,
         });
 
-        res.status(201).json({
-            message: "Pedido creado exitosamente",
-            success: true,
-            order: course,
-        })
+        if (course.purchased) {
+            course.purchased += 1;
+        };
+        
+        await course.save();
+        await newOrder(data, res, next);
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
