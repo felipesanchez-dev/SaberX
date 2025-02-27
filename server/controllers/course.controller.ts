@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import { CatchAsyncError } from '../middleware/catchAsyncError';
 import ErrorHandler from '../utils/ErrorHandler';
 import cloudinary from 'cloudinary'
-import { createCourse } from '../services/course.service';
+import { createCourse, getAllCoursesService } from '../services/course.service';
 import CourseModel from '../models/course.model';
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../utils/sendMail';
+import NotificationModel from '../models/notification.Model';
 
 export const uploadCourse = CatchAsyncError(async ( req: Request, res: Response, next: NextFunction)=> {
     try{
@@ -213,6 +214,12 @@ export const addQuestion = CatchAsyncError(async (req: Request, res: Response, n
 
         courseContent.questions.push(newQuestion);
 
+        await NotificationModel.create({
+            user: req.user?._id,
+            title: "Nuevo mensaje",
+            message: `Tienes una notificacion de ${courseContent.title}`,
+        });
+
         await course?.save();
 
         res.status(200).json({
@@ -265,6 +272,11 @@ export const addAnswer = CatchAsyncError(async (req: Request, res: Response, nex
         await course?.save();
         
         if (req.user?.id === question.user._id) {
+            await NotificationModel.create({
+                user: req.user?._id,
+                title: "Nueva respuesta",
+                message: `Tienes una nueva respuesta en ${courseContent.title}`,
+            });
             
         } else {
             const data = {
@@ -400,5 +412,14 @@ export const addReplayToReview = CatchAsyncError(async (req: Request, res: Respo
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500)); 
+    }
+});
+
+export const getAllUsers = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        getAllCoursesService(res);
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message,400));
     }
 });

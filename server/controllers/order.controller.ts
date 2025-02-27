@@ -1,4 +1,4 @@
-import { newOrder } from './../services/order.service';
+import { getAllOrdersService, newOrder } from './../services/order.service';
 import { NextFunction, Request, Response } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/ErrorHandler";
@@ -64,21 +64,27 @@ export const createOrder = CatchAsyncError(async (req: Request, res: Response, n
 
         await user?.save();
 
-        const notification = await NotificationModel.create({
+        await NotificationModel.create({
             user: user?._id,
             title: "Nueva Orden",
             message: `Tienes un nuevo pedido de ${course?.name}`,
         });
 
         course.purchased ? course.purchased += 1 : course.purchased;
-        // if (course.purchased) {
-        //     course.purchased += 1;
-        // };
         
         await course.save();
         await newOrder(data, res, next);
 
     } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+    }
+});
+
+export const getAllOrders = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        getAllOrdersService(res);
+        
+    }catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
     }
 });
