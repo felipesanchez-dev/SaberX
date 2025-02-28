@@ -1,6 +1,6 @@
 # SaberX  
 
-🚀 Backend de la plataforma de aprendizaje con cursos de programación y tecnología, enfocada en la educación accesible y el código abierto.  
+<!-- 🚀 Backend de la plataforma de aprendizaje con cursos de programación y tecnología, enfocada en la educación accesible y el código abierto.  
 
 ## 📌 Tecnologías utilizadas en el Backend
 
@@ -28,3 +28,4 @@
   - `@types/jsonwebtoken`  
   - `@types/node`  
 ---
+ -->
