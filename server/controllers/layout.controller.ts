@@ -133,7 +133,7 @@ export const editLayout = CatchAsyncError(async (req: Request, res: Response, ne
         const categoriesData = await LayoutModel.findOne({ type: 'Categories' });
 
         if (!categoriesData) {
-            return next(new ErrorHandler('Categorías no encontradas', 404));
+            return next(new ErrorHandler('Categorías no encontradas', 500));
         }
 
         const categoriesItems = categories.map((item: any) => ({
@@ -147,4 +147,35 @@ export const editLayout = CatchAsyncError(async (req: Request, res: Response, ne
         success: true,
         message: 'Layout actualizado exitosamente',
     });
+});
+
+export const getLayoutByType = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { type } = req.body;
+
+        if (!type) {
+            return res.status(400).json({
+                success: false,
+                message: "El tipo de layout es requerido."
+            });
+        }
+
+        const layout = await LayoutModel.findOne({ type });
+
+        if (!layout) {
+            return res.status(404).json({
+                success: false,
+                message: `No se encontró un layout de tipo "${type}".`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Layout obtenido exitosamente',
+            layout,
+        });
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+    }
 });
