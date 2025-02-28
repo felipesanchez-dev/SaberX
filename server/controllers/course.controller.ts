@@ -91,6 +91,8 @@ export const getSingleCourse = CatchAsyncError(async (req: Request, res: Respons
             '-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links'
         );
 
+        await redis.set(courseId, JSON.stringify(course), 'EX', 604800);
+
         if (!course) {
             return res.status(404).json({
                 message: 'Curso no encontrado',
@@ -161,10 +163,22 @@ export const getCourseByUser = CatchAsyncError(async (req: Request, res: Respons
         const userCourseList = req.user?.courses || [];
         const courseId = req.params.id;
 
-        const courseExists = userCourseList.find((course: any) => course._id.toString() === courseId);
+        if (!req.user) {
+            return next(new ErrorHandler("Usuario no autenticado", 401));
+        }
+
+        if (!courseId) {
+            return next(new ErrorHandler("El ID del curso es requerido", 400));
+        }
+
+        // console.log("Lista de cursos del usuario:", userCourseList);
+        // console.log("ID del curso solicitado:", courseId);
+
+        // 💡 COMPARACIÓN CORREGIDA: Se usa course.courseId en lugar de course._id
+        const courseExists = userCourseList.some((course: any) => course.courseId.toString() === courseId);
 
         if (!courseExists) {
-            return next(new ErrorHandler("No eres elegible para acceder a este curso", 403)); 
+            return next(new ErrorHandler("No eres elegible para acceder a este curso", 403));
         }
 
         const course = await CourseModel.findById(courseId);
@@ -183,6 +197,7 @@ export const getCourseByUser = CatchAsyncError(async (req: Request, res: Respons
         return next(new ErrorHandler(error.message, 500));
     }
 });
+
 
 interface IAddQuestionData {
     question: string; 

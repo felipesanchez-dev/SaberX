@@ -25,7 +25,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
             decoded = jwt.verify(access_token, secretKey) as JwtPayload;
         } catch (error: any) {
             if (error.name === "TokenExpiredError") {
-                return next(new ErrorHandler("El token ha expirado, por favor inicie sesión nuevamente", 401));
+                return next(new ErrorHandler("El token ha expirado, por favor inicie sesión nuevamente", 400));
             }
             return next(new ErrorHandler("El token de acceso no es válido", 400));
         }
@@ -36,7 +36,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
 
         const user = await redis.get(String(decoded.id));
         if (!user) {
-            return next(new ErrorHandler("Usuario no encontrado o sesión expirada", 404));
+            return next(new ErrorHandler("Porfavor inicie sesion para acceder a este recurso", 400));
         }
 
         req.user = JSON.parse(user); 

@@ -159,7 +159,7 @@ export const updateAccessToken = CatchAsyncError(async ( req: Request, res: Resp
 
         const sesion = await redis.get(decoded.id as string);
         if (!sesion) {
-            return next(new ErrorHandler(message, 400));
+            return next(new ErrorHandler('Porfavor inicie sesion para acceder a este recurso', 400));
         }
         
         const user = JSON.parse(sesion);
@@ -176,6 +176,8 @@ export const updateAccessToken = CatchAsyncError(async ( req: Request, res: Resp
 
         res.cookie('access_token', accessToken, accessTokenOptions);
         res.cookie('refresh_token', refreshToken, refreshTokenOptions);
+
+        await redis.set(user._id, JSON.stringify(user), 'EX', 604800);
 
         res.status(200).json({
             success: 'Success',
