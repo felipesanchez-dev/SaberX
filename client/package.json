@@ -1,13 +1,29 @@
 {
-  "name": "client",
+  "name": "saberx",
   "version": "0.1.0",
-  "private": true,
+  "description": "Frontend de la plataforma de aprendizaje con cursos de programación y tecnología, con un enfoque en educación accesible",
+  "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "author": "Pipedev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/felipesanchez-dev/SaberX"
+  },
+  "keywords": [
+    "cursos",
+    "programación",
+    "tecnología",
+    "aprendizaje",
+    "educación",
+    "accesible",
+    "plataforma"
+  ],
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
