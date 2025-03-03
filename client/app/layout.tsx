@@ -1,5 +1,5 @@
 import { Poppins, Josefin_Sans } from "next/font/google";
-import { ThemeProvider } from "./utils/theme-provider";
+import { ThemeProvider } from "../utils/theme-provider";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -21,11 +21,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+      <body
+        className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}
+      >
+        {/* Agregamos suppressHydrationWarning para evitar la advertencia de mismatche */}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
