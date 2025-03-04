@@ -1,6 +1,8 @@
+"use client";
 import { Poppins, Josefin_Sans } from "next/font/google";
 import { ThemeProvider } from "../utils/theme-provider";
 import "./globals.css";
+import { useEffect, useState } from "react";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,17 +16,22 @@ const josefin = Josefin_Sans({
   variable: "--font-Josefin",
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    // Sincroniza el tema con el sistema
+    setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }, []);
+
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body
-        className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}
+        suppressHydrationWarning
+        className={`${poppins.variable} ${josefin.variable} 
+        bg-white dark:bg-gradient-to-b dark:from-gray-900 dark:to-black 
+        bg-no-repeat duration-300 ${theme}`}
       >
-        {/* Agregamos suppressHydrationWarning para evitar la advertencia de mismatche */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>
