@@ -35,7 +35,6 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
                     </Link>
                 ))}
             </div>
-            
             {/* Menú móvil */}
             {isMobile && (
                 <div className="block md:hidden mt-5">

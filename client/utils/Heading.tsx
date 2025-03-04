@@ -1,7 +1,6 @@
 // "use client";
 import React, { FC, useEffect, useState } from "react";
 import Head from "next/head";
-import Header from "../components/Header";
 
 const Page: FC = () => {
     const [open, setOpen] = useState(false);
