@@ -1,7 +1,8 @@
 "use client";
 import React, { FC, useState } from "react";
 import Heading from "../utils/Heading";
-import Header from "../components/Header";
+import Header from "./components/Header";
+import Hero from "./components/Routes/Hero";
 
 const Page: FC = () => {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,7 @@ const Page: FC = () => {
     <>
       <Heading />
       <Header open={open} setOpen={setOpen} activeItem={activeItem} />
+      <Hero />
     </>
   );
 };

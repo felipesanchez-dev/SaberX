@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 import React, { FC, useState, useEffect, useCallback } from "react";
-import NavItems from "../utils/NavItems";
+import NavItems from "../../utils/NavItems";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle, HiX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 
