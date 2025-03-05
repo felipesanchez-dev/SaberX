@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 import React, { FC, useEffect, useState } from "react";
 import Head from "next/head";
 
@@ -26,6 +26,9 @@ const Page: FC = () => {
           content="cursos online, educación en línea, aprender a programar, cursos de matemáticas, cálculo, inglés, formación digital, desarrollo profesional, aprendizaje autodidacta, plataforma educativa, educación accesible, cursos de tecnología, habilidades digitales, certificaciones online"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico" />
+        <link rel="icon" type="image/png" href="/favicon.icon" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
     </>
   );
