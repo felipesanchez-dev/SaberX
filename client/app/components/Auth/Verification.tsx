@@ -31,6 +31,7 @@ const Verification: FC<Props> = ({ setRoute }) => {
   });
 
   const verifictionHandler = async () => {
+    setInvalidError(true);
     console.log("Verificación en proceso...");
   };
 
@@ -59,7 +60,7 @@ const Verification: FC<Props> = ({ setRoute }) => {
       <div className="mt-6 flex justify-center space-x-4">
         {Object.keys(verifyNumber).map((key, index) => (
           <input
-            type="text"
+            type="number"
             key={key}
             ref={inputRefs[index]}
             className={`w-16 h-16 bg-transparent border-2 rounded-lg flex items-center text-black dark:text-white justify-center text-xl font-semibold text-center outline-none transition-all duration-300 focus:border-blue-500 dark:focus:border-blue-400 ${
