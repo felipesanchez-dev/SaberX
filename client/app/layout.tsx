@@ -1,6 +1,6 @@
 "use client";
 import { Poppins, Josefin_Sans } from "next/font/google";
-import { ThemeProvider } from "../utils/theme-provider";
+import { ThemeProvider } from "./components/utils/theme-provider";
 import "./globals.css";
 import { useEffect, useState } from "react";
 

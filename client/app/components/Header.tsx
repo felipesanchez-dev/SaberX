@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import React, { FC, useState, useEffect, useCallback } from "react";
-import NavItems from "../../utils/NavItems";
+import NavItems from "./utils/NavItems";
+import CustomModal from "./utils/CustomModal";
+import Login from "../components/Auth/Login";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle, HiX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,9 +12,11 @@ type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
   activeItem: number;
+  route: string;
+  setRoute: (route: string) => void;
 };
 
-const Header: FC<Props> = ({ activeItem, setOpen }) => {
+const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
 
@@ -29,6 +33,11 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Depuración: Verifica cambios en el estado de open
+  useEffect(() => {
+    console.log("Nuevo estado de open:", open);
+  }, [open]);
 
   return (
     <div className="w-full relative text-black dark:text-white">
@@ -67,7 +76,9 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
               <HiOutlineUserCircle
                 size={25}
                 className="hidden md:block cursor-pointer text-black dark:text-white"
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                  setOpen(true);
+                }}
               />
             </div>
           </div>
@@ -126,6 +137,15 @@ const Header: FC<Props> = ({ activeItem, setOpen }) => {
           )}
         </AnimatePresence>
       </div>
+
+      {route === "Login" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen}
+          activeItem={activeItem}
+          component={Login}
+        />
+      )}
     </div>
   );
 };
