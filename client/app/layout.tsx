@@ -24,7 +24,6 @@ export default function RootLayout({
   const [theme, setTheme] = useState("light");
 
   useEffect(() => {
-    // Sincroniza el tema con el sistema
     setTheme(
       window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"

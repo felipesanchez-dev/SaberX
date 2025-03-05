@@ -2,12 +2,13 @@
 import Link from "next/link";
 import React, { FC, useState, useEffect, useCallback } from "react";
 import NavItems from "./utils/NavItems";
+// import { ThemeSwitcher } from "./utils/ThemeSwitcher";
 import CustomModal from "./utils/CustomModal";
 import Login from "../components/Auth/Login";
+import SignUp from "../components/Auth/SignUp";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle, HiX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Prop types
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -20,8 +21,8 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
 
-  const handleClose = useCallback((e: any) => {
-    if (e.target.id === "screen") {
+  const handleClose = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLDivElement).id === "screen") {
       setOpenSidebar(false);
     }
   }, []);
@@ -33,9 +34,6 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Depuración: Verifica cambios en el estado de open
-  useEffect(() => {}, [open]);
 
   return (
     <div className="w-full relative text-black dark:text-white">
@@ -49,14 +47,12 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
         <div className="w-[95%] 800px:w-[92%] m-auto py-2 h-full">
           <div className="w-full h-[80px] flex items-center justify-between p-3">
             {/* Logo */}
-            <div>
-              <Link
-                href={"/"}
-                className="text-[25px] font-Poppins font-[500] text-black dark:text-white"
-              >
-                SABER ✘
-              </Link>
-            </div>
+            <Link
+              href="/"
+              className="text-[25px] font-Poppins font-[500] text-black dark:text-white"
+            >
+              SABER ✘
+            </Link>
 
             <div className="flex items-center">
               <NavItems
@@ -71,16 +67,16 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
+              {/* <ThemeSwitcher /> */}
               <HiOutlineUserCircle
                 size={25}
                 className="hidden md:block cursor-pointer text-black dark:text-white"
-                onClick={() => {
-                  setOpen(true);
-                }}
+                onClick={() => setOpen(true)}
               />
             </div>
           </div>
         </div>
+
         {/* Sidebar */}
         <AnimatePresence>
           {openSidebar && (
@@ -118,17 +114,8 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                   onClick={() => setOpen(true)}
                 />
                 <br />
-                <br />
                 <p className="text-[16px] px-2 pl-5 text-black dark:text-white">
-                  © {new Date().getFullYear()}
-                  <span> S</span>ABER
-                  <span
-                    className="text-xl font-extrabold"
-                    style={{ color: "#F1F1F1" }}
-                  >
-                    {" "}
-                    ✘
-                  </span>
+                  © {new Date().getFullYear()} <span>SABER ✘</span>
                 </p>
               </motion.div>
             </motion.div>
@@ -140,8 +127,18 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
         <CustomModal
           open={open}
           setOpen={setOpen}
+          setRoute={setRoute}
           activeItem={activeItem}
           component={Login}
+        />
+      )}
+      {route === "Sign-Up" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={SignUp}
         />
       )}
     </div>

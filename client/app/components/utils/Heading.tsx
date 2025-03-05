@@ -10,7 +10,7 @@ const Page: FC = () => {
   );
 
   useEffect(() => {
-    document.title = title; // Actualiza el título en el cliente
+    document.title = title;
   }, [title]);
 
   return (

@@ -19,7 +19,6 @@ type Props = {
 const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
   return (
     <>
-      {/* Menú de escritorio */}
       <div className="hidden md:flex">
         {NavItemsData.map((item, index) => (
           <Link href={item.url} key={index} passHref>
