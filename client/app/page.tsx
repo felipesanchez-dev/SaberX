@@ -7,7 +7,7 @@ import Hero from "./components/Routes/Hero";
 const Page: FC = () => {
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(0);
-  const [route, setRoute] = useState("login");
+  const [route, setRoute] = useState("Login");
 
   return (
     <>

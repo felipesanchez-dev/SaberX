@@ -35,9 +35,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   }, []);
 
   // Depuración: Verifica cambios en el estado de open
-  useEffect(() => {
-    console.log("Nuevo estado de open:", open);
-  }, [open]);
+  useEffect(() => {}, [open]);
 
   return (
     <div className="w-full relative text-black dark:text-white">
