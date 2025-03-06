@@ -1,7 +1,7 @@
-import { app } from './app';
-import { v2 as cloudinary } from 'cloudinary';
-import connectDB from './utils/db';
-require('dotenv').config();
+import { app } from "./app";
+import { v2 as cloudinary } from "cloudinary";
+import connectDB from "./utils/db";
+require("dotenv").config();
 
 try {
   cloudinary.config({
@@ -22,10 +22,11 @@ connectDB().catch((error) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en el puerto: ${PORT}`);
-}).on('error', (error) => {
-  console.error("Error iniciando el servidor ❌", error);
-  process.exit(1);
-});
-
+app
+  .listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en el puerto: ${PORT}`);
+  })
+  .on("error", (error) => {
+    console.error("Error iniciando el servidor ❌", error);
+    process.exit(1);
+  });

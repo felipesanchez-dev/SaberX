@@ -1,58 +1,66 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notificación de Nueva Respuesta</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            background: #fff;
-            margin: 20px auto;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            color: #555;
-            font-size: 16px;
-        }
-        .highlight {
-            font-weight: bold;
-            color: #007BFF;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 15px;
-            margin-top: 10px;
-            background: #007BFF;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .button:hover {
-            background: #0056b3;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        background: #fff;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      h1 {
+        color: #333;
+      }
+      p {
+        color: #555;
+        font-size: 16px;
+      }
+      .highlight {
+        font-weight: bold;
+        color: #007bff;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 15px;
+        margin-top: 10px;
+        background: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      .button:hover {
+        background: #0056b3;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>Hola <%= name %>,</h1>
-        <p>Se ha añadido una nueva respuesta a tu pregunta en el curso "<span class="highlight"><%= title %></span>".</p>
-        <p>Por favor, inicia sesión en nuestro sitio web para ver la respuesta y continuar con la discusión.</p>
-        <p>¡Gracias por ser parte de nuestra comunidad!</p>
+      <h1>Hola <%= name %>,</h1>
+      <p>
+        Se ha añadido una nueva respuesta a tu pregunta en el curso "<span
+          class="highlight"
+          ><%= title %></span
+        >".
+      </p>
+      <p>
+        Por favor, inicia sesión en nuestro sitio web para ver la respuesta y
+        continuar con la discusión.
+      </p>
+      <p>¡Gracias por ser parte de nuestra comunidad!</p>
     </div>
-</body>
+  </body>
 </html>

@@ -1,87 +1,99 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>SaberX - Activacion de Email</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style type="text/css">
-        body {
-            margin: 0;
-            padding: 0;
-            min-width: 100%;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            background-color: #f4f4f4;
-            color: #222222;
-        }
-        a {
-            color: #000;
-            text-decoration: none;
-        }
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            line-height: 1.25;
-            margin-top: 0;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        p {
-            margin-top: 0;
-            margin-bottom: 24px;
-        }
-        table td {
-            vertical-align: top;
-        }
-        /* Layout */
-        .email-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .email-header {
-            background-color: #0070f3;
-            color: #ffffff;
-            padding: 24px;
-        }
-        .email-body {
-            padding: 24px;
-            background-color: #ffffff;
-        }
-        .email-footer {
-            background-color: #f6f6f6;
-            padding: 24px;
-        }
-        .button {
-            display: inline-block;
-            background-color: #0070f3;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 700;
-            text-align: center;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        min-width: 100%;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        background-color: #f4f4f4;
+        color: #222222;
+      }
+      a {
+        color: #000;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.25;
+        margin-top: 0;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+      p {
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+      table td {
+        vertical-align: top;
+      }
+      /* Layout */
+      .email-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .email-header {
+        background-color: #0070f3;
+        color: #ffffff;
+        padding: 24px;
+      }
+      .email-body {
+        padding: 24px;
+        background-color: #ffffff;
+      }
+      .email-footer {
+        background-color: #f6f6f6;
+        padding: 24px;
+      }
+      .button {
+        display: inline-block;
+        background-color: #0070f3;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="email-wrapper">
-        <div class="email-header">
-            <h1>Bienvenido a <span style="color: rgba(0, 0, 0, 0.674);">SaberX</span></h1>
-        </div>
-        <div class="email-body">
-            <p>Hola <%= user.name %>,</p>
-            <p>Gracias por registrarte en SaberX. Para activar tu cuenta, por favor utiliza el siguiente código de activación:</p>
-            <h2><%= activationCode %></h2>
-            <p>Ingresa este código en la página de activación dentro de los próximos 5 minutos.</p>
-            <p>Si no te registraste para una cuenta de SaberX, ignora este correo posiblemente un usuario nuevo halla cometido un error.</p>
-        </div>
-        <div class="email-footer">
-            <p>Si tienes alguna pregunta, no dudes en contactarnos en 
-                <a href="#">Contacto</a>
-            </p>
-        </div>
+      <div class="email-header">
+        <h1>
+          Bienvenido a <span style="color: rgba(0, 0, 0, 0.674)">SaberX</span>
+        </h1>
+      </div>
+      <div class="email-body">
+        <p>Hola <%= user.name %>,</p>
+        <p>
+          Gracias por registrarte en SaberX. Para activar tu cuenta, por favor
+          utiliza el siguiente código de activación:
+        </p>
+        <h2><%= activationCode %></h2>
+        <p>
+          Ingresa este código en la página de activación dentro de los próximos
+          5 minutos.
+        </p>
+        <p>
+          Si no te registraste para una cuenta de SaberX, ignora este correo
+          posiblemente un usuario nuevo halla cometido un error.
+        </p>
+      </div>
+      <div class="email-footer">
+        <p>
+          Si tienes alguna pregunta, no dudes en contactarnos en
+          <a href="#">Contacto</a>
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 </html>
