@@ -2,13 +2,15 @@
 import Link from "next/link";
 import React, { FC, useState, useEffect, useCallback } from "react";
 import NavItems from "./utils/NavItems";
-// import { ThemeSwitcher } from "./utils/ThemeSwitcher";
 import CustomModal from "./utils/CustomModal";
 import Login from "../components/Auth/Login";
 import SignUp from "../components/Auth/SignUp";
 import Verification from "../components/Auth/Verification";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle, HiX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
+import Image from "next/image";
+import avatarDefault from "../../public/assets/avatar.png";
 
 type Props = {
   open: boolean;
@@ -21,6 +23,7 @@ type Props = {
 const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const { user } = useSelector((state: any) => state.auth);
 
   const handleClose = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLDivElement).id === "screen") {
@@ -68,12 +71,23 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
-              {/* <ThemeSwitcher /> */}
-              <HiOutlineUserCircle
-                size={25}
-                className="hidden md:block cursor-pointer text-black dark:text-white"
-                onClick={() => setOpen(true)}
-              />
+              {user ? (
+                <>
+                  <Image
+                    src={user.avatar?.url || avatarDefault}
+                    alt="User Avatar"
+                    width={30}
+                    height={30}
+                    className="rounded-full object-cover"
+                  />
+                </>
+              ) : (
+                <HiOutlineUserCircle
+                  size={25}
+                  className="hidden md:block cursor-pointer text-black dark:text-white"
+                  onClick={() => setOpen(true)}
+                />
+              )}
             </div>
           </div>
         </div>
