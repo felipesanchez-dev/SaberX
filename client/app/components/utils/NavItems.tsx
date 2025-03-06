@@ -27,7 +27,7 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
                 activeItem === index
                   ? "dark:text-[#37a39a] text-[crimson]"
                   : "dark:text-white text-black"
-              } text-[18px] px-6 font-Poppins cursor-pointer font-bold`}
+              } text-[18px] px-6 font-Poppins cursor-pointer font-[500]`}
             >
               {item.name}
             </span>
@@ -39,7 +39,7 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
         <div className="block md:hidden mt-5">
           <div className="w-full text-center py-6">
             <Link href="/" passHref>
-              <span className="text-[25px] font-Poppins text-black dark:text-white font-bold">
+              <span className="text-[25px] font-Poppins text-black dark:text-white font-[500]">
                 SABER ✘🎓
               </span>
             </Link>

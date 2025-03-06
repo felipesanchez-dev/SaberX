@@ -12,6 +12,7 @@ import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
 
 const schema = Yup.object().shape({
   email: Yup.string()
@@ -145,10 +146,12 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
         <FcGoogle
           size={36}
           className="cursor-pointer hover:scale-110 transition-transform"
+          onClick={() => signIn("google")}
         />
         <AiFillGithub
           size={36}
           className="cursor-pointer hover:scale-110 transition-transform text-black dark:text-white"
+          onClick={() => signIn("github")}
         />
       </div>
 

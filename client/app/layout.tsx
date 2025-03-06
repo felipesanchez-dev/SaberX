@@ -5,6 +5,7 @@ import { ThemeProvider } from "./components/utils/theme-provider";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Provider";
+import { SessionProvider } from "next-auth/react";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -42,10 +43,12 @@ export default function RootLayout({
         bg-no-repeat duration-300 ${theme}`}
       >
         <Providers>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
-            <Toaster position="top-center" reverseOrder={false} />
-          </ThemeProvider>
+          <SessionProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              {children}
+              <Toaster position="top-center" reverseOrder={false} />
+            </ThemeProvider>
+          </SessionProvider>
         </Providers>
       </body>
     </html>

@@ -72,15 +72,15 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                 />
               </div>
               {user ? (
-                <>
+                <Link href={"/profile"}>
                   <Image
                     src={user.avatar?.url || avatarDefault}
                     alt="User Avatar"
                     width={30}
                     height={30}
-                    className="rounded-full object-cover"
+                    className="rounded-full object-cover w-[30px] h-[30px] cursor-pointer"
                   />
-                </>
+                </Link>
               ) : (
                 <HiOutlineUserCircle
                   size={25}

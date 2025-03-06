@@ -1,143 +1,140 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
-import { IUser } from "./user.model";
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import { IUser } from './user.model';
 
 interface IComment extends Document {
-  user: IUser;
-  question: string;
-  questionReplices?: IComment[];
+    user: IUser;
+    question: string;
+    questionReplices?: IComment[];
 }
 
 interface IReview extends Document {
-  user: IUser;
-  rating: number;
-  comment: string;
-  commentReplices: IComment[];
+    user: IUser;
+    rating: number;
+    comment: string;
+    commentReplices: IComment[];
 }
 
 interface ILink extends Document {
-  title: string;
-  url: string;
+    title: string;
+    url: string;
 }
 
 interface ICourseData extends Document {
-  title: string;
-  description: string;
-  videoUrl: string;
-  videoThumbnail: object;
-  VideoSection: string;
-  videoLength: number;
-  videoPlayer: string;
-  links: ILink[];
-  suggestion: string;
-  questions: IComment[];
+    title: string;
+    description: string;
+    videoUrl: string;
+    videoThumbnail: object;
+    VideoSection: string;
+    videoLength: number;
+    videoPlayer: string;
+    links: ILink[];
+    suggestion: string;
+    questions: IComment[];
 }
 
 interface ICourse extends Document {
-  name: string;
-  description: string;
-  price?: number;
-  estimatedPrice?: number;
-  thumbnail: object;
-  tags: string;
-  level: string;
-  demoUrl: string;
-  benefits: { title: string }[];
-  prerequisites: { title: string }[];
-  reviews: IReview[];
-  courseData: ICourseData;
-  ratings?: number;
-  purchased: number;
+    name: string;
+    description: string;
+    price?: number; 
+    estimatedPrice?: number;
+    thumbnail: object;
+    tags: string;
+    level: string;
+    demoUrl: string;
+    benefits: { title: string }[];
+    prerequisites: { title: string }[];
+    reviews: IReview[];
+    courseData: ICourseData;
+    ratings?: number;
+    purchased: number;
 }
 
 const reviewSchema = new Schema<IReview>({
-  user: Object,
-  rating: {
-    type: Number,
-    default: 0,
-  },
-  comment: String,
-  commentReplices: [Object],
+    user: Object,
+    rating: { 
+        type: Number,
+        default: 0 
+    },
+    comment: String,
+    commentReplices: [Object],
 });
 
 const linkSchema = new Schema<ILink>({
-  title: String,
-  url: String,
+    title: String,
+    url: String,
 });
 
 const commentSchema = new Schema<IComment>({
-  user: Object,
-  question: String,
-  questionReplices: [Object],
+    user: Object,
+    question: String,
+    questionReplices: [Object],
 });
 
 const courseDataSchema = new Schema<ICourseData>({
-  videoUrl: String,
-  // videoThumbnail: Object,
-  title: String,
-  VideoSection: String,
-  description: String,
-  videoLength: Number,
-  videoPlayer: String,
-  links: [linkSchema],
-  suggestion: String,
-  questions: [commentSchema],
+    videoUrl: String,
+    // videoThumbnail: Object,
+    title: String,
+    VideoSection: String,
+    description: String,
+    videoLength: Number,
+    videoPlayer: String,
+    links: [linkSchema],
+    suggestion: String,
+    questions: [commentSchema],
 });
 
-const courseSchema = new Schema<ICourse>(
-  {
+const courseSchema = new Schema<ICourse>({
     name: {
-      type: String,
-      required: true,
+        type: String,
+        required: true, 
     },
     description: {
-      type: String,
-      required: true,
+        type: String,
+        required: true, 
     },
     price: {
-      type: Number,
-      required: false,
+        type: Number,
+        required: false,
     },
     estimatedPrice: {
-      type: Number,
-      required: false,
+        type: Number,
+        required: false,
     },
     thumbnail: {
-      public_id: {
-        type: String,
-        // required: true, // ID de la imagen en el servidor
-      },
-      url: {
-        type: String,
-        // required: true, // URL de la imagen del curso
-      },
+        public_id: {
+            type: String,
+            // required: true, // ID de la imagen en el servidor
+        },
+        url: {
+            type: String,
+            // required: true, // URL de la imagen del curso
+        },
     },
     tags: {
-      type: String,
-      required: true,
+        type: String,
+        required: true, 
     },
     level: {
-      type: String,
-      required: true,
+        type: String,
+        required: true, 
     },
     demoUrl: {
-      type: String,
-      required: true,
+        type: String,
+        required: true, 
     },
-    benefits: [{ title: String }],
+    benefits: [{ title: String }], 
     prerequisites: [{ title: String }],
     reviews: [reviewSchema],
-    courseData: [courseDataSchema],
-    ratings: {
-      type: Number,
-      default: 0,
+    courseData: [courseDataSchema], 
+    ratings: { 
+        type: Number,
+        default: 0, 
     },
     purchased: {
-      type: Number,
-      default: 0,
+        type: Number,
+        default: 0,
     },
-  },
-  { timestamps: true }
-);
+}, {timestamps: true});
 
 const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
 
