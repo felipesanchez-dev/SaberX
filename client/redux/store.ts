@@ -13,12 +13,15 @@ export const store = configureStore({
     getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
-const initiaLizeApp = async () => {
-  await store.dispatch(
-    apiSlice.endpoints.refreshToken.initiate({}, { forceRefetch: true })
-  );
-  await store.dispatch(
-    apiSlice.endpoints.loadUser.initiate({}, { forceRefetch: true })
-  );
+const initializeApp = async () => {
+  const state = store.getState();
+  if (state.auth.token) {
+    await store.dispatch(
+      apiSlice.endpoints.refreshToken.initiate({}, { forceRefetch: true })
+    );
+    await store.dispatch(
+      apiSlice.endpoints.loadUser.initiate({}, { forceRefetch: true })
+    );
+  }
 };
-initiaLizeApp();
+initializeApp();

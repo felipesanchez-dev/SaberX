@@ -11,6 +11,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatarDefault from "../../public/assets/avatar.png";
+import { useSession } from "next-auth/react";
+import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 type Props = {
   open: boolean;
@@ -24,6 +27,25 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
   const { user } = useSelector((state: any) => state.auth);
+  const { data } = useSession();
+  const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
+  console.log(data);
+
+  useEffect(() => {
+    if (!user) {
+      if (data) {
+        socialAuth({
+          email: data?.user?.email,
+          name: data?.user?.name,
+          avatar: data.user?.image,
+        });
+      }
+    }
+    if (isSuccess) {
+      toast.success("");
+    }
+  }, [data, user]);
 
   const handleClose = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLDivElement).id === "screen") {
@@ -72,7 +94,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                 />
               </div>
               {user ? (
-                <Link href={"/profile"}>
+                <Link href={"/"}>
                   <Image
                     src={user.avatar?.url || avatarDefault}
                     alt="User Avatar"
