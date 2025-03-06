@@ -31,6 +31,7 @@ const Verification: FC<Props> = ({ setRoute }) => {
       if ("data" in error) {
         const errorData = error as any;
         toast.error(errorData.data.message);
+        setInvalidError(true);
       } else {
         console.log("Error: ", error);
       }
