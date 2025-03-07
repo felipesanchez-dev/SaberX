@@ -94,7 +94,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                 />
               </div>
               {user ? (
-                <Link href={"/"}>
+                <Link href={"/profile"}>
                   <Image
                     src={user.avatar?.url || avatarDefault}
                     alt="User Avatar"
