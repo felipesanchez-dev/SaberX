@@ -28,7 +28,7 @@ const Profile: FC<Props> = ({ user }) => {
 
     setTimeout(() => {
       router.push("/");
-    }, 200);
+    }, 400);
   };
 
   if (typeof window !== "undefined") {
