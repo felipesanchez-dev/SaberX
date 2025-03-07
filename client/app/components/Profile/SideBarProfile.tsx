@@ -28,70 +28,66 @@ const SideBarProfile: FC<Props> = ({
   const userName = user.name || "Usuario";
 
   return (
-    <div className="w-[280px] h-full bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800 shadow-xl flex flex-col items-center py-6 transition-all border border-gray-200 dark:border-gray-700 rounded-lg">
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-        Mi Cuenta
+    <div className="w-[280px] h-full bg-gradient-to-b from-gray-100 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg flex flex-col items-center py-6 border border-gray-300 dark:border-gray-700 rounded-xl">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-200 text-center px-4">
+        ¡Hola, <span className="font-bold">{userName}</span>! Administra tu
+        cuenta fácilmente desde aquí.
       </h2>
-      <br />
-      <div
-        className={`w-[90%] flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all
-          ${
+
+      <div className="w-[90%] mt-5 flex flex-col gap-3">
+        <button
+          className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all text-gray-800 dark:text-gray-200 ${
             active === 1
-              ? "bg-amber-50 text-white shadow-lg"
-              : "hover:bg-amber-50 hover:text-white dark:hover:bg-amber-50"
-          } 
-          bg-gray-100 dark:bg-gray-800 dark:text-white`}
-        onClick={() => setActive(1)}
-      >
-        <Image
-          src={userAvatar}
-          width={55}
-          height={55}
-          alt={`${userName} Avatar`}
-          className="w-[55px] h-[55px] rounded-full object-cover border-2"
-        />
-        <span className="text-lg font-semibold font-Poppins text-gray-800 dark:text-white">
-          {userName}
-        </span>
-      </div>
-      <br />
-      <div
-        className={`w-[90%] flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all
-          ${
+              ? "bg-[#7b8f8a] text-white shadow-md"
+              : "hover:bg-gray-200 dark:hover:bg-gray-700"
+          }`}
+          onClick={() => setActive(1)}
+        >
+          <Image
+            src={userAvatar}
+            width={45}
+            height={45}
+            alt={`${userName} Avatar`}
+            className="w-[45px] h-[45px] rounded-full object-cover border-2"
+          />
+          <span className="text-md font-medium">Editar perfil</span>
+        </button>
+
+        <button
+          className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all ${
             active === 2
-              ? "bg-[#ffffff2d] text-white shadow-lg"
-              : "hover:bg[#ffffff2d] hover:text-white dark:hover:bg-[#ffffff2d]"
-          } 
-          bg-gray-100 dark:bg-gray-800 dark:text-white`}
-        onClick={() => setActive(2)}
-      >
-        <RiLockPasswordLine size={20} fill="#fff" /> Cambiar contraseña
-      </div>
-      <br />
-      <div
-        className={`w-[90%] flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all
-          ${
+              ? "bg-[#7b8f8a] text-white shadow-md"
+              : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"
+          }`}
+          onClick={() => setActive(2)}
+        >
+          <RiLockPasswordLine size={20} />
+          <span className="text-md font-medium">Cambiar contraseña</span>
+        </button>
+
+        <button
+          className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all ${
             active === 3
-              ? "bg-[#ffffff2d] text-white shadow-lg"
-              : "hover:bg[#ffffff2d] hover:text-white dark:hover:bg-[#ffffff2d]"
-          } 
-          bg-gray-100 dark:bg-gray-800 dark:text-white`}
-        onClick={() => setActive(3)}
-      >
-        <SiCoursera size={20} fill="#fff" /> Mis cursos
-      </div>
-      <br />
-      <div
-        className={`w-[90%] flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all
-          ${
+              ? "bg-[#7b8f8a] text-white shadow-md"
+              : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"
+          }`}
+          onClick={() => setActive(3)}
+        >
+          <SiCoursera size={20} />
+          <span className="text-md font-medium">Mis cursos</span>
+        </button>
+
+        <button
+          className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all ${
             active === 4
-              ? "bg-[#ffffff2d] text-white shadow-lg"
-              : "hover:bg[#ffffff2d] hover:text-white dark:hover:bg-[#ffffff2d]"
-          } 
-          bg-gray-100 dark:bg-gray-800 dark:text-white`}
-        onClick={() => logOutHandler()}
-      >
-        <AiOutlineLogout size={20} fill="#fff" /> Cerrar Sesion
+              ? "bg-red-500 text-white shadow-md"
+              : "hover:bg-red-500 hover:text-white text-gray-800 dark:text-gray-200"
+          }`}
+          onClick={() => logOutHandler()}
+        >
+          <AiOutlineLogout size={20} />
+          <span className="text-md font-medium">Cerrar sesión</span>
+        </button>
       </div>
     </div>
   );
