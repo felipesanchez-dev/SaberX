@@ -11,7 +11,7 @@ const Page = () => {
 
   return (
     <>
-      <Heading />
+      <Heading title="SaberX - La plataforma de aprendizaje accesible" />
       <Header
         open={open}
         setOpen={setOpen}
