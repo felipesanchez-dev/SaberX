@@ -1,16 +1,9 @@
 import { apiSlice } from "../api/apiSlice";
-import { userLoggedIn, userRegistration } from "./authSlice";
-
-type RegistrationResponse = {
-  message: string;
-  activationToken: string;
-};
-
-type RegistrationData = {};
+import { userLoggedIn, userLoggedOut, userRegistration } from "./authSlice";
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation<RegistrationResponse, RegistrationData>({
+    register: builder.mutation({
       query: (data) => ({
         url: "registration",
         method: "POST",
@@ -20,16 +13,13 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
-          dispatch(
-            userRegistration({
-              token: result.data.activationToken,
-            })
-          );
-        } catch (error: any) {
+          dispatch(userRegistration({ token: result.data.activationToken }));
+        } catch (error) {
           console.error(error);
         }
       },
     }),
+
     activation: builder.mutation({
       query: ({ activation_token, activation_code }) => ({
         url: "activate-user",
@@ -37,6 +27,7 @@ export const authApi = apiSlice.injectEndpoints({
         body: { activation_token, activation_code },
       }),
     }),
+
     login: builder.mutation({
       query: ({ email, password }) => ({
         url: "login",
@@ -47,17 +38,36 @@ export const authApi = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { queryFulfilled, dispatch }) {
         try {
           const result = await queryFulfilled;
-          dispatch(
-            userLoggedIn({
-              accessToken: result.data.activationToken,
-              user: result.data.user,
-            })
-          );
-        } catch (error: any) {
+          if (result.data.accessToken && result.data.user) {
+            dispatch(
+              userLoggedIn({
+                accessToken: result.data.accessToken,
+                user: result.data.user,
+              })
+            );
+          }
+        } catch (error) {
           console.error(error);
         }
       },
     }),
+
+    logOut: builder.query({
+      query: () => ({
+        url: "logout",
+        method: "GET",
+        credentials: "include" as const,
+      }),
+      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+        try {
+          await queryFulfilled;
+          dispatch(userLoggedOut());
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    }),
+
     socialAuth: builder.mutation({
       query: ({ name, email, avatar }) => ({
         url: "social-auth",
@@ -74,7 +84,7 @@ export const authApi = apiSlice.injectEndpoints({
               user: result.data.user,
             })
           );
-        } catch (error: any) {
+        } catch (error) {
           console.error(error);
         }
       },
@@ -87,4 +97,5 @@ export const {
   useActivationMutation,
   useLoginMutation,
   useSocialAuthMutation,
+  useLogOutQuery,
 } = authApi;

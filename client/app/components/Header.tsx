@@ -12,7 +12,10 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatarDefault from "../../public/assets/avatar.png";
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import {
+  useLogOutQuery,
+  useSocialAuthMutation,
+} from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -29,23 +32,28 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
   const { user } = useSelector((state: any) => state.auth);
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
-
-  console.log(data);
+  const [logout, setLogout] = useState(false);
+  const {} = useLogOutQuery(undefined, {
+    skip: !logout ? true : false,
+  });
 
   useEffect(() => {
-    if (!user) {
-      if (data) {
-        socialAuth({
-          email: data?.user?.email,
-          name: data?.user?.name,
-          avatar: data.user?.image,
-        });
-      }
+    if (!user && data) {
+      socialAuth({
+        email: data?.user?.email,
+        name: data?.user?.name,
+        avatar: data.user?.image,
+      });
     }
+
     if (isSuccess) {
-      toast.success("");
+      toast.success("Sesión iniciada con éxito");
     }
-  }, [data, user]);
+
+    if (user === null && data === null) {
+      setLogout(true);
+    }
+  }, [data, user, isSuccess]);
 
   const handleClose = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLDivElement).id === "screen") {

@@ -25,6 +25,10 @@ input[type="number"] {
 body {
   color: rgb(var(--foreground-rgb));
 }
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
 
 .hero_animation {
   background-image: linear-gradient(
