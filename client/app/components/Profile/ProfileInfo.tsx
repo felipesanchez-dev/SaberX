@@ -50,7 +50,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
       }
     };
 
-    fileReader.readAsDataURL(file);
+    fileReader.readAsDataURL(e.target.files[0]);
   };
   const handleSubmit = async (e: any) => {
     e.preventDefault();

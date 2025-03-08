@@ -31,34 +31,39 @@ type Props = {
 const Login: FC<Props> = ({ setRoute, setOpen }) => {
   const [show, setShow] = useState(false);
   const [login, { isSuccess, error }] = useLoginMutation();
+
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
     onSubmit: async ({ email, password }) => {
-      await login({ email, password });
+      try {
+        await login({ email, password }).unwrap();
+      } catch (err: any) {
+        if (err.status === 401) {
+          toast.error("Correo o contraseña incorrectos");
+        } else {
+          toast.error(
+            err?.data?.message || "Ocurrió un error, intenta de nuevo"
+          );
+        }
+      }
     },
   });
+
   useEffect(() => {
     if (isSuccess) {
-      // toast.success("Inicio de sesion exitoso");
+      toast.success("Inicio de sesión exitoso");
       setOpen(false);
     }
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.message);
-      }
-    }
-  }, [isSuccess, error]);
+  }, [isSuccess]);
 
   const { errors, touched, values, handleChange, handleSubmit } = formik;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full max-w-lg mx-auto bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700"
+      className="text-black dark:text-white w-full max-w-lg mx-auto bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700"
     >
       <h1 className="text-3xl font-extrabold text-center text-black dark:text-white mb-6">
         Bienvenido a <span className="text-primary">Saber X</span>
@@ -68,7 +73,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+            className="block text-sm font-semibold text-black dark:text-white"
           >
             Correo electrónico
           </label>

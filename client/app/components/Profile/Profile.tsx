@@ -5,6 +5,7 @@ import { useLogOutQuery } from "../../../redux/features/auth/authApi";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import ProfileInfo from "./ProfileInfo";
+import ChangePassword from "./ChangePassword";
 import { motion } from "framer-motion";
 
 type Props = {
@@ -72,6 +73,16 @@ const Profile: FC<Props> = ({ user }) => {
           className="w-full h-full bg-transparent mt-[40px] md:mt-[80px]"
         >
           <ProfileInfo avatar={avatar} user={user} />
+        </motion.div>
+      )}
+      {active === 2 && (
+        <motion.div
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="w-full h-full bg-transparent mt-[40px] md:mt-[80px]"
+        >
+          <ChangePassword />
         </motion.div>
       )}
     </motion.div>
