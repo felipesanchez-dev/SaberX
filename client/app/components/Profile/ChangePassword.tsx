@@ -47,7 +47,6 @@ const ChangePassword: FC = () => {
         Cambiar Contraseña
       </h2>
       <form onSubmit={passwordChangeHandler} className="space-y-5">
-        {/* Contraseña Actual */}
         <div className="relative">
           <label className="block text-gray-800 dark:text-gray-200 pb-2 font-bold">
             Contraseña Actual
@@ -69,7 +68,6 @@ const ChangePassword: FC = () => {
           </button>
         </div>
 
-        {/* Nueva Contraseña */}
         <div className="relative">
           <label className="block text-gray-800 dark:text-gray-200 pb-2 font-bold">
             Nueva Contraseña
@@ -91,7 +89,6 @@ const ChangePassword: FC = () => {
           </button>
         </div>
 
-        {/* Confirmar Nueva Contraseña */}
         <div className="relative">
           <label className="block text-gray-800 dark:text-gray-200 pb-2 font-bold">
             Confirmar Nueva Contraseña

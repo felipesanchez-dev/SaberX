@@ -5,11 +5,14 @@ import avatarDefault from "../../../public/assets/avatar.png";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { SiCoursera } from "react-icons/si";
 import { AiOutlineLogout } from "react-icons/ai";
+import { MdAdminPanelSettings } from "react-icons/md";
+import Link from "next/link";
 
 type Props = {
   user: {
     name?: string;
     avatar?: { url?: string };
+    role?: string;
   };
   active: number;
   avatar: string | null;
@@ -52,6 +55,24 @@ const SideBarProfile: FC<Props> = ({
           />
           <span className="text-md font-medium">Editar perfil</span>
         </button>
+
+        {user.role === "admin" && (
+          <Link href="/admin">
+            <button
+              className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all ${
+                active === 6
+                  ? "bg-[#7b8f8a] text-white shadow-md"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"
+              }`}
+              onClick={() => setActive(6)}
+            >
+              <MdAdminPanelSettings size={20} />
+              <span className="text-md font-medium">
+                Panel de control admin
+              </span>
+            </button>
+          </Link>
+        )}
 
         <button
           className={`flex items-center gap-3 p-3 w-full rounded-lg transition-all ${

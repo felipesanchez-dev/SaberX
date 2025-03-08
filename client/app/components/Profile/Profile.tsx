@@ -47,7 +47,7 @@ const Profile: FC<Props> = ({ user }) => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
-      className="w-full md:w-[85%] flex flex-col md:flex-row mx-auto transition-opacity duration-500"
+      className="w-full md:w-[85%] min-h-screen flex flex-col md:flex-row mx-auto transition-opacity duration-500"
     >
       <motion.div
         initial={{ x: -50, opacity: 0 }}
