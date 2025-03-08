@@ -4,8 +4,12 @@ import React, { FC, useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import { ImSpinner2 } from "react-icons/im";
 import avatarIcon from "../../../public/assets/avatar.png";
-import { useUpdateAvatarMutation } from "@/redux/features/user/userApi";
+import {
+  useEditProfileMutation,
+  useUpdateAvatarMutation,
+} from "@/redux/features/user/userApi";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import toast from "react-hot-toast";
 
 type Props = {
   avatar: string | null;
@@ -16,6 +20,10 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const [name, setName] = useState(user?.name || "");
   const [loading, setLoading] = useState(false);
   const [updateAvatar, { isSuccess, error }] = useUpdateAvatarMutation();
+  const [
+    editProfile,
+    { isSuccess: successEditProfile, error: errorEditProfile },
+  ] = useEditProfileMutation();
   const { refetch } = useLoadUserQuery({});
 
   const imageHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +38,12 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
         try {
           await updateAvatar(fileReader.result);
         } catch (err) {
-          console.error("Error actualizando avatar:", err);
+          if (typeof err === "object" && err !== null && "data" in err) {
+            const errorData = err as any;
+            toast.error(errorData.message);
+          } else {
+            toast.error("Error actualizando avatar");
+          }
         } finally {
           setLoading(false);
         }
@@ -39,20 +52,26 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
 
     fileReader.readAsDataURL(file);
   };
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    if (name !== "") {
+      await editProfile({
+        name: name,
+      });
+      toast.success(
+        "Actualización exitosa. Los cambios se reflejarán en unos minutos. Si no los ves, prueba cerrando sesión y volviendo a iniciar sesion."
+      );
+    }
+  };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || successEditProfile) {
       refetch();
     }
-    if (error) {
+    if (error || errorEditProfile) {
       console.error("Error:", error);
     }
-  }, [isSuccess, error, refetch]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Submit form");
-  };
+  }, [isSuccess, error, refetch, successEditProfile, errorEditProfile]);
 
   return (
     <div className="w-full max-w-lg mx-auto p-6 bg-white dark:bg-gray-900 rounded-3xl shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
@@ -89,20 +108,20 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-gray-800 dark:text-gray-200 pb-2 font-bold">
-              Nombre
+              ACTUALIZAR NOMBRE
             </label>
             <input
               type="text"
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none transition-all  text-gray-800 dark:text-gray-200"
               required
-              placeholder="Tu nombre"
+              placeholder="Tu nombre actual es"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 pb-2 font-semibold">
-              Correo electrónico
+            <label className="block text-gray-700 dark:text-gray-300 pb-2 font-bold">
+              ACTUALIZAR CORREO
             </label>
             <input
               type="text"

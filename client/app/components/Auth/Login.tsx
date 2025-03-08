@@ -40,7 +40,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
   });
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Inicio de sesion exitoso");
+      // toast.success("Inicio de sesion exitoso");
       setOpen(false);
     }
     if (error) {

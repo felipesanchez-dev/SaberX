@@ -47,7 +47,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
     }
 
     if (isSuccess) {
-      toast.success("Sesión iniciada con éxito");
+      // toast.success("Sesión iniciada con éxito");
     }
 
     if (user === null && data === null) {
