@@ -155,7 +155,7 @@ const Sidebar = () => {
                   className="!text-[20px] text-white"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  {user?.role}
+                  - {user?.role} -
                 </Typography>
               </Box>
             </Box>
