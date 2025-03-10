@@ -50,7 +50,7 @@ const Item: FC<ItemProps> = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const { user } = useSelector((state: any) => state.auth);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
@@ -295,7 +295,7 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="extra"
+              title="Salir"
               to="/"
               icon={<ExitToAppIcon />}
               selected={selected}
@@ -308,4 +308,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;
