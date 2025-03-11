@@ -26,7 +26,23 @@ const CourseContent: FC<Props> = ({
 
   return (
     <div className="w-[80%] m-auto mt-24 p3">
-      <form onSubmit={handleSumit}></form>
+      <form onSubmit={handleSumit}>
+        {courseContentData?.map((item: any, index: number) => {
+          const showSectionInput =
+            index === 0 ||
+            item.videoSection !== courseContentData[index - 1].videoSection;
+
+          return (
+            <>
+              <div
+                className={`w-full bg-[#cdc8c817] p-4 ${
+                  showSectionInput ? "mt-10" : "mb-0"
+                }`}
+              ></div>
+            </>
+          );
+        })}
+      </form>
     </div>
   );
 };
