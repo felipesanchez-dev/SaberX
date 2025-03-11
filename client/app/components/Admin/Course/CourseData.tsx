@@ -61,7 +61,6 @@ const CourseData: FC<Props> = ({
 
   return (
     <div className="w-full max-w-3xl mx-auto mt-12 p-6 bg-gray-900 rounded-xl shadow-xl border border-gray-700">
-      {/* Beneficios */}
       <div className="mb-8">
         <label className="block text-xl font-bold text-white mb-4">
           Beneficios del Curso
@@ -97,10 +96,9 @@ const CourseData: FC<Props> = ({
         </motion.button>
       </div>
 
-      {/* Prerequisitos */}
       <div>
         <label className="block text-xl font-bold text-white mb-4">
-          Prerequisitos del Curso
+          Prerequisitos para el Curso
         </label>
         <AnimatePresence>
           {prerequisites.map((prerequisite, index) => (
@@ -133,7 +131,6 @@ const CourseData: FC<Props> = ({
         </motion.button>
       </div>
 
-      {/* Navegación */}
       <div className="flex justify-between items-center mt-8">
         <motion.button
           whileHover={{ scale: 1.05 }}
