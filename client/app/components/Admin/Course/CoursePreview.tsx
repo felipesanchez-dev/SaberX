@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import Ratings from "../../utils/Ratings";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import "./video.css";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type Props = {
   active: number;
@@ -23,7 +25,12 @@ const CoursePreview: FC<Props> = ({
       `¡Te has inscrito al curso "${courseData?.name}" exitosamente! 🎉`
     );
   };
-
+  const prevButton = () => {
+    setActive(active - 1);
+  };
+  const createCourse = () => {
+    handleCourseCreate();
+  };
   return (
     <div className="w-[80%] m-auto py-5 mb-5 bg-white dark:bg-gray-800 shadow-lg rounded-xl p-5">
       <div className="w-full relative">
@@ -99,6 +106,24 @@ const CoursePreview: FC<Props> = ({
           Detalles del curso
         </h1>
         {courseData?.description}
+      </div>
+      <div className="flex justify-between items-center mt-8">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={prevButton}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-lg shadow-md transition-all cursor-pointer"
+        >
+          <ArrowLeft className="w-5 h-5" /> Anterior
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={createCourse}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md transition-all cursor-pointer"
+        >
+          Terminar <ArrowRight className="w-5 h-5" />
+        </motion.button>
       </div>
     </div>
   );
