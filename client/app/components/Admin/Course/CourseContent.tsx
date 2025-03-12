@@ -1,7 +1,8 @@
 import React, { FC, useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlinePlusCircle } from "react-icons/ai";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { BsPencil } from "react-icons/bs";
+import { BsLink45Deg, BsPencil } from "react-icons/bs";
+import toast from "react-hot-toast";
 
 type Props = {
   active: number;
@@ -28,15 +29,50 @@ const CourseContent: FC<Props> = ({
   };
 
   const handleCollapseToggle = (index: number) => {
-    const updatedCollasped = [...isCollapsed];
-    updatedCollasped[index] = !updatedCollasped[index];
-    setIsCollapsed(updatedCollasped);
+    const updatedCollapsed = [...isCollapsed];
+    updatedCollapsed[index] = !updatedCollapsed[index];
+    setIsCollapsed(updatedCollapsed);
   };
 
   const handleRemoveLink = (index: number, linkIndex: number) => {
     const updatedData = [...courseContentData];
     updatedData[index].links.splice(linkIndex, 1);
     setCourseContentData(updatedData);
+  };
+
+  const handleAddLink = (index: number) => {
+    const updatedData = [...courseContentData];
+    updatedData[index].links.push({ title: "", url: "" });
+    setCourseContentData(updatedData);
+  };
+
+  const newContentHandler = (item: any) => {
+    if (
+      item.title === "" ||
+      item.description === "" ||
+      item.videoUrl === "" ||
+      item.links[0].title === "" ||
+      item.links[0].url === ""
+    ) {
+      toast.error("Por favor, rellene todos los campos obligatorios");
+    } else {
+      let newVideoSection = "";
+      if (courseContentData.length > 0) {
+        const lastVideoSection =
+          courseContentData[courseContentData.length - 1].videoSection;
+        if (lastVideoSection) {
+          newVideoSection = lastVideoSection;
+        }
+      }
+      const newContent = {
+        videoUrl: "",
+        title: "",
+        description: "",
+        videoSection: newVideoSection,
+        links: [{ title: "", url: "" }],
+      };
+      setCourseContentData([...courseContentData, newContent]);
+    }
   };
 
   return (
@@ -113,118 +149,85 @@ const CourseContent: FC<Props> = ({
                 </div>
 
                 {!isCollapsed[index] && (
-                  <div className="mt-4">
-                    <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
-                      Titulo del video
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Nombre del video"
-                      className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-                      value={item.title}
-                      onChange={(e) => {
-                        const updatedData = [...courseContentData];
-                        updatedData[index].title = e.target.value;
-                        setCourseContentData(updatedData);
-                      }}
-                    />
-                  </div>
-                )}
-                <br />
-                <div className="mb-3">
-                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
-                    Ingrese el video del curso (URL)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="http://"
-                    className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                    value={item.videoUrl}
-                    onChange={(e) => {
-                      const updatedData = [...courseContentData];
-                      updatedData[index].videoUrl = e.target.value;
-                      setCourseContentData(updatedData);
-                    }}
-                  />
-                </div>
-                <br />
-                <div className="mb-3">
-                  <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
-                    Descripcion del video
-                  </label>
-                  <textarea
-                    rows={8}
-                    cols={30}
-                    placeholder=""
-                    className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none !h-min py-2"
-                    value={item.description}
-                    onChange={(e) => {
-                      const updatedData = [...courseContentData];
-                      updatedData[index].description = e.target.value;
-                      setCourseContentData(updatedData);
-                    }}
-                  />
-                </div>
-                {item?.links.map((link: any, linkIndex: number) => (
-                  <div className="mb-3 block">
-                    <div className="w-full flex items-center justify-between">
-                      <label
-                        className="block text-gray-700 dark:text-gray-300 font-medium mb-1 mr-2"
-                        htmlFor={`link-${index + 1}`}
-                      >
-                        Link {linkIndex + 1}
+                  <>
+                    <div className="mt-4">
+                      <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
+                        Titulo del video
                       </label>
-                      <AiOutlineDelete
-                        className={`text-xl mr-2 text-red-500 ${
-                          linkIndex === 0
-                            ? "cursor-pointer hover:text-red-700 transition"
-                            : "cursor-not-allowed opacity-50"
-                        }`}
-                        onClick={() => {
-                          linkIndex === 0
-                            ? null
-                            : handleRemoveLink(index, linkIndex);
+                      <input
+                        type="text"
+                        placeholder="Nombre del video"
+                        className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                        value={item.title}
+                        onChange={(e) => {
+                          const updatedData = [...courseContentData];
+                          updatedData[index].title = e.target.value;
+                          setCourseContentData(updatedData);
                         }}
                       />
                     </div>
-                    <input
-                      type="text"
-                      placeholder=""
-                      className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                      value={link.title}
-                      onChange={(e) => {
-                        const updatedData = [...courseContentData];
-                        updatedData[index].links[linkIndex].title =
-                          e.target.value;
-                        setCourseContentData(updatedData);
-                      }}
-                    />
                     <br />
+                    <div className="mb-3">
+                      <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
+                        Ingrese el video del curso (URL)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="http://"
+                        className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        value={item.videoUrl}
+                        onChange={(e) => {
+                          const updatedData = [...courseContentData];
+                          updatedData[index].videoUrl = e.target.value;
+                          setCourseContentData(updatedData);
+                        }}
+                      />
+                    </div>
                     <br />
+                    <div className="mb-3">
+                      <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
+                        Descripcion del video
+                      </label>
+                      <textarea
+                        rows={8}
+                        cols={30}
+                        placeholder=""
+                        className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none !h-min py-2"
+                        value={item.description}
+                        onChange={(e) => {
+                          const updatedData = [...courseContentData];
+                          updatedData[index].description = e.target.value;
+                          setCourseContentData(updatedData);
+                        }}
+                      />
+                    </div>
                     {item?.links.map((link: any, linkIndex: number) => (
                       <div className="mb-3 block" key={linkIndex}>
-                        <div className="w-full flex flex-wrap items-center justify-between gap-2">
-                          <label className="text-gray-300 font-medium">
+                        <div className="w-full flex items-center justify-between">
+                          <label
+                            className="block text-gray-700 dark:text-gray-300 font-medium mb-1 mr-2"
+                            htmlFor={`link-${index + 1}`}
+                          >
                             Link {linkIndex + 1}
                           </label>
                           <AiOutlineDelete
-                            className={`text-xl text-red-500 cursor-pointer transition-transform transform hover:scale-110 hover:text-red-700 ${
+                            className={`text-xl mr-2 text-red-500 ${
                               linkIndex === 0
-                                ? "opacity-50 cursor-not-allowed"
-                                : ""
+                                ? "cursor-pointer hover:text-red-700 transition"
+                                : "cursor-pointer opacity-50"
                             }`}
-                            onClick={() =>
-                              linkIndex === 0
-                                ? null
-                                : handleRemoveLink(index, linkIndex)
-                            }
+                            onClick={() => {
+                              if (linkIndex !== 0) {
+                                handleRemoveLink(index, linkIndex);
+                              }
+                            }}
                           />
+                        </div>
+                        <div className="w-full flex flex-wrap items-center justify-between gap-2">
                           <input
                             type="text"
                             placeholder="Source Code (Link title)"
-                            className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 
-                            focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                             value={link.title}
                             onChange={(e) => {
                               const updatedData = [...courseContentData];
@@ -236,8 +239,7 @@ const CourseContent: FC<Props> = ({
                           <input
                             type="text"
                             placeholder="Source Code URL (Link URL)"
-                            className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 
-                            focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            className="flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                             value={link.url}
                             onChange={(e) => {
                               const updatedData = [...courseContentData];
@@ -247,11 +249,31 @@ const CourseContent: FC<Props> = ({
                             }}
                           />
                         </div>
+                        <br />
+                        <div className="inline-block mb-4">
+                          <p
+                            className="flex items-center text-[18px] dark:text-white text-black cursor-pointer"
+                            onClick={() => handleAddLink(index)}
+                          >
+                            <BsLink45Deg className="mr-2" /> Add Link
+                          </p>
+                        </div>
                       </div>
                     ))}
-                  </div>
-                ))}
+                  </>
+                )}
               </div>
+              <br />
+              {index === courseContentData.length - 1 && (
+                <div>
+                  <p
+                    className="flex items-center text-[18px] dark:text-white text-black cursor-pointer"
+                    onClick={(e: any) => newContentHandler(item)}
+                  >
+                    <AiOutlinePlusCircle className="mr-2" /> Add new Content
+                  </p>
+                </div>
+              )}
             </React.Fragment>
           );
         })}
