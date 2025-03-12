@@ -33,14 +33,12 @@ const CoursePlayer: FC<Props> = ({ videoUrl, title }) => {
     } catch (error: any) {
       console.error("Error al obtener OTP:", error);
 
-      // Manejo de errores específicos del backend
       if (error.response?.data?.message) {
         setError(`❌ ${error.response.data.message}`);
       } else {
         setError("No se pudo cargar el video. Por favor, inténtalo de nuevo.");
       }
 
-      // Reintento automático
       if (retries > 0) {
         console.warn(`🔁 Reintentando... (${2 - retries + 1})`);
         setTimeout(() => fetchVideoData(retries - 1), 2000);
@@ -55,7 +53,7 @@ const CoursePlayer: FC<Props> = ({ videoUrl, title }) => {
   }, [videoUrl]);
 
   return (
-    <div className="relative w-full aspect-video bg-gray-200 dark:bg-gray-800 flex justify-center items-center">
+    <div className="relative w-full max-w-4xl aspect-video bg-gray-200 dark:bg-gray-800 flex justify-center items-center mx-auto rounded-lg shadow-lg overflow-hidden">
       {loading && (
         <div className="text-gray-500 animate-pulse">⏳ Cargando video...</div>
       )}

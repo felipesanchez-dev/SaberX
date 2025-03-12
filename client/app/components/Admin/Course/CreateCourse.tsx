@@ -64,7 +64,7 @@ const CreateCourse = (props: Props) => {
     const data = {
       name: courseInfo.name,
       description: courseInfo.description,
-      price: courseInfo.price,
+      price: courseInfo.price || 0,
       estimatedPrice: courseInfo.estimatedPrice,
       tag: courseInfo.tags,
       thumbnail: courseInfo.thumbnail,
@@ -74,7 +74,12 @@ const CreateCourse = (props: Props) => {
       benefits: formattedBenefits,
       prerequisites: formattedPrerequisites,
       courseContentData: formattedCourseContentData,
+      isFree:
+        courseInfo.price === "0" || courseInfo.price === ""
+          ? "Gratis"
+          : `\$${courseInfo.price}`,
     };
+
     setCourseData(data);
   };
   const handleCourseCreate = async (e: any) => {
