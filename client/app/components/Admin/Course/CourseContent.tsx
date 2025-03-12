@@ -168,7 +168,7 @@ const CourseContent: FC<Props> = ({
                 </div>
                 {item?.links.map((link: any, linkIndex: number) => (
                   <div className="mb-3 block">
-                    <div className="w-full flex items-center justify-center">
+                    <div className="w-full flex items-center justify-between">
                       <label
                         className="block text-gray-700 dark:text-gray-300 font-medium mb-1 mr-2"
                         htmlFor={`link-${index + 1}`}
@@ -200,6 +200,27 @@ const CourseContent: FC<Props> = ({
                         setCourseContentData(updatedData);
                       }}
                     />
+                    {item?.links.map((link: any, linkIndex: number) => (
+                      <div className="mb-3 block">
+                        <div className="w-full flex items-center justify-center">
+                          <label htmlFor="" className="">
+                            Link {linkIndex + 1}
+                          </label>
+                          <AiOutlineDelete
+                            className={`text-xl mr-2 text-red-500 ${
+                              linkIndex === 0
+                                ? "cursor-pointer hover:text-red-700 transition"
+                                : "cursor-not-allowed opacity-50"
+                            }`}
+                            onClick={() =>
+                              linkIndex === 0
+                                ? null
+                                : handleRemoveLink(index, linkIndex)
+                            }
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
