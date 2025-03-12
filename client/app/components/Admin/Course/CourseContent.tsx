@@ -215,11 +215,11 @@ const CourseContent: FC<Props> = ({
                     <br />
                     <div className="mb-3">
                       <label className="block text-gray-700 dark:text-gray-300 font-medium mb-1">
-                        Ingrese el video del curso (URL)
+                        Ingrese el video del curso (ID)
                       </label>
                       <input
                         type="text"
-                        placeholder="http://"
+                        placeholder="ID del video"
                         className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                         value={item.videoUrl}
                         onChange={(e) => {

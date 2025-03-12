@@ -169,7 +169,7 @@ const CourseInformation: FC<Props> = ({
               htmlFor="demoUrl"
               className="text-lg font-semibold text-white"
             >
-              URL de demostración
+              ID de video demo
             </label>
             <div className="relative">
               <input
@@ -180,7 +180,7 @@ const CourseInformation: FC<Props> = ({
                 onChange={(e: any) =>
                   setCourseInfo({ ...courseInfo, demoUrl: e.target.value })
                 }
-                placeholder="Ingrese la URL de demostración"
+                placeholder="Ingrese ID de video demo"
                 className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 
                    focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all pr-12"
               />
