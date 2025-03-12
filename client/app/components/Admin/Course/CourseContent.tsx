@@ -3,13 +3,15 @@ import { AiOutlineDelete, AiOutlinePlusCircle } from "react-icons/ai";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { BsLink45Deg, BsPencil } from "react-icons/bs";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type Props = {
   active: number;
   setActive: (active: number) => void;
   courseContentData: any;
-  setCourseContentData: (data: any) => void;
-  handleSubmit: (e: React.FormEvent) => void;
+  setCourseContentData: (courseContentData: any) => void;
+  handleSubmit: any;
 };
 
 const CourseContent: FC<Props> = ({
@@ -72,6 +74,50 @@ const CourseContent: FC<Props> = ({
         links: [{ title: "", url: "" }],
       };
       setCourseContentData([...courseContentData, newContent]);
+    }
+  };
+
+  const addNewSection = () => {
+    if (
+      courseContentData[courseContentData.length - 1].title === "" ||
+      courseContentData[courseContentData.length - 1].description === "" ||
+      courseContentData[courseContentData.length - 1].videoUrl === "" ||
+      courseContentData[courseContentData.length - 1].links[0].title === "" ||
+      courseContentData[courseContentData.length - 1].links[0].url === ""
+    ) {
+      toast.error(
+        "Por favor, rellene todos los campos obligatorios en la sección anterior"
+      );
+    } else {
+      setActiveSection(activeSection + 1);
+      const newContent = {
+        videoUrl: "",
+        title: "",
+        description: "",
+        videoSection: `Unitled section ${activeSection}`,
+        links: [{ title: "", url: "" }],
+      };
+      setCourseContentData([...courseContentData, newContent]);
+    }
+  };
+  const prevButton = () => {
+    setActive(active - 1);
+  };
+
+  const handleOptions = () => {
+    if (
+      courseContentData[courseContentData.length - 1].title === "" ||
+      courseContentData[courseContentData.length - 1].description === "" ||
+      courseContentData[courseContentData.length - 1].videoUrl === "" ||
+      courseContentData[courseContentData.length - 1].links[0].title === "" ||
+      courseContentData[courseContentData.length - 1].links[0].url === ""
+    ) {
+      toast.error(
+        "Por favor, rellene todos los campos obligatorios en la sección anterior"
+      );
+    } else {
+      setActive(active + 1);
+      handleCourseSubmit();
     }
   };
 
@@ -255,7 +301,7 @@ const CourseContent: FC<Props> = ({
                             className="flex items-center text-[18px] dark:text-white text-black cursor-pointer"
                             onClick={() => handleAddLink(index)}
                           >
-                            <BsLink45Deg className="mr-2" /> Add Link
+                            <BsLink45Deg className="mr-2" /> Agregar mas link
                           </p>
                         </div>
                       </div>
@@ -270,13 +316,39 @@ const CourseContent: FC<Props> = ({
                     className="flex items-center text-[18px] dark:text-white text-black cursor-pointer"
                     onClick={(e: any) => newContentHandler(item)}
                   >
-                    <AiOutlinePlusCircle className="mr-2" /> Add new Content
+                    <AiOutlinePlusCircle className="mr-2" /> Agregar mas
+                    contenido
                   </p>
                 </div>
               )}
             </React.Fragment>
           );
         })}
+        <br />
+        <div
+          className="flex items-center text-[20px] dark:text-white text-black cursor-pointer"
+          onClick={() => addNewSection()}
+        >
+          <AiOutlinePlusCircle className="mr-2" /> Crear nueva seccion
+        </div>
+        <div className="flex justify-between items-center mt-8">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={prevButton}
+            className="flex items-center gap-2 px-4 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-lg shadow-md transition-all"
+          >
+            <ArrowLeft className="w-5 h-5" /> Anterior
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleOptions}
+            className="flex items-center gap-2 px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md transition-all"
+          >
+            Siguiente <ArrowRight className="w-5 h-5" />
+          </motion.button>
+        </div>
       </form>
     </div>
   );
