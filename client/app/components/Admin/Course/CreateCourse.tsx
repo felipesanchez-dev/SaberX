@@ -14,7 +14,7 @@ const CreateCourse = (props: Props) => {
     description: "",
     price: "",
     estimatedPrice: "",
-    tag: "",
+    tags: "",
     level: "",
     demoUrl: "",
     thumbnail: "",
@@ -37,7 +37,46 @@ const CreateCourse = (props: Props) => {
     },
   ]);
   const [courseData, setCourseData] = useState({});
-  const handleSubmit = async () => {};
+
+  const handleSubmit = async () => {
+    const formattedBenefits = benefits.map((benefit) => ({
+      title: benefit.title,
+    }));
+
+    const formattedPrerequisites = prerequisites.map((prerequisite) => ({
+      title: prerequisite.title,
+    }));
+
+    const formattedCourseContentData = courseContentData.map(
+      (courseContentData) => ({
+        videoUrl: courseContentData.videoUrl,
+        title: courseContentData.title,
+        description: courseContentData.description,
+        videoSection: courseContentData.videoSection,
+        links: courseContentData.links.map((link) => ({
+          title: link.title,
+          url: link.url,
+        })),
+        suggestion: courseContentData.suggestion,
+      })
+    );
+    const data = {
+      name: courseInfo.name,
+      description: courseInfo.description,
+      price: courseInfo.price,
+      estimatedPrice: courseInfo.estimatedPrice,
+      tag: courseInfo.tags,
+      thumbnail: courseInfo.thumbnail,
+      level: courseInfo.level,
+      demoUrl: courseInfo.demoUrl,
+      totalVideos: courseContentData.length,
+      benefits: formattedBenefits,
+      prerequisites: formattedPrerequisites,
+      courseContentData: formattedCourseContentData,
+    };
+    setCourseData(data);
+  };
+  console.log(courseData);
 
   return (
     <div className="w-full flex min-h-screen">

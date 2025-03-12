@@ -28,6 +28,7 @@ const CourseContent: FC<Props> = ({
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    console.log("Formulario enviado", courseContentData);
   };
 
   const handleCollapseToggle = (index: number) => {

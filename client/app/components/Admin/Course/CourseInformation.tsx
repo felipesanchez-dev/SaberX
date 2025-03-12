@@ -129,7 +129,7 @@ const CourseInformation: FC<Props> = ({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="tags" className="text-lg font-semibold text-white">
+          <label className="text-lg font-semibold text-white">
             Etiquetas del curso
           </label>
           <input
@@ -146,7 +146,6 @@ const CourseInformation: FC<Props> = ({
           />
         </div>
         <div className="w-full flex justify-between gap-4">
-          {/* Nivel del curso */}
           <div className="w-[45%] flex flex-col gap-2">
             <label htmlFor="level" className="text-lg font-semibold text-white">
               Nivel del curso
