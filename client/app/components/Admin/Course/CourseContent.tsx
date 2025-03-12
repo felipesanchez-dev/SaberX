@@ -188,6 +188,18 @@ const CourseContent: FC<Props> = ({
                         }}
                       />
                     </div>
+                    <input
+                      type="text"
+                      placeholder=""
+                      className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      value={link.title}
+                      onChange={(e) => {
+                        const updatedData = [...courseContentData];
+                        updatedData[index].links[linkIndex].title =
+                          e.target.value;
+                        setCourseContentData(updatedData);
+                      }}
+                    />
                   </div>
                 ))}
               </div>
