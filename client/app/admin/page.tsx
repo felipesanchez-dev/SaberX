@@ -3,6 +3,7 @@ import React from "react";
 import Heading from "../components/utils/Heading";
 import { useSelector } from "react-redux";
 import AdminSidebar from "../components/Admin/sidebar/AdminSidebar";
+import DeshboarHero from "../components/Admin/DeshboarHero";
 
 type Props = {};
 
@@ -18,7 +19,9 @@ const page = (props: Props) => {
         <div className="1500px:w-[16%] w-1/5">
           <AdminSidebar />
         </div>
-        <div className="w-[85%]"></div>
+        <div className="w-[85%]">
+          <DeshboarHero />
+        </div>
       </div>
     </>
   );

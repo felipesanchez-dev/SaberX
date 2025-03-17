@@ -109,6 +109,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                     width={30}
                     height={30}
                     className="rounded-full object-cover w-[30px] h-[30px] cursor-pointer"
+                    priority
                   />
                 </Link>
               ) : (
