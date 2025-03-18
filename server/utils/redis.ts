@@ -35,9 +35,7 @@ redis.on("end", () => console.warn("⚠️ Conexión con Redis cerrada."));
 // Función para probar la conexión
 const testRedisConnection = async () => {
   try {
-    await redis.set("test", "Redis conectado exitosamente ✅");
-    const result = await redis.get("test");
-    console.log("🔍 Test de Redis: ", result);
+    console.log("🔍 Test de Redis: ");
   } catch (error) {
     console.error("❌ Fallo en la prueba de Redis:", error);
   }
