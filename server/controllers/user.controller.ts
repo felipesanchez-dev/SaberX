@@ -184,42 +184,51 @@ export const updateAccessToken = CatchAsyncError(
     try {
       const refresh_token = req.cookies.refresh_token as string;
 
-      const decoded = jwt.verify(
-        refresh_token,
-        process.env.REFRESH_TOKEN as string
-      ) as { id: string };
+      if (!refresh_token) {
+        console.log("No hay refresh_token en las cookies");
+        return next(new ErrorHandler("No hay token de refresco", 400));
+      }
 
-      const message = "Error no se pudo actualizar el token";
-      if (!decoded) {
-        return next(new ErrorHandler(message, 400));
+      console.log("Token de refresco recibido:", refresh_token);
+
+      let decoded;
+      try {
+        decoded = jwt.verify(
+          refresh_token,
+          process.env.REFRESH_TOKEN as string
+        ) as jwt.JwtPayload;
+        console.log("Token decodificado:", decoded);
+      } catch (err) {
+        console.error("Error al decodificar el token:", err);
+        return next(new ErrorHandler("Token inválido o expirado", 401));
       }
 
       const sesion = await redis.get(decoded.id as string);
+      console.log("Sesión desde Redis:", sesion);
+
       if (!sesion) {
         return next(
           new ErrorHandler(
-            "Porfavor inicie sesion para acceder a este recurso",
-            400
+            "Por favor inicie sesión para acceder a este recurso",
+            403
           )
         );
       }
 
       const user = JSON.parse(sesion);
 
+      console.log("Usuario recuperado:", user);
+
       const accessToken = jwt.sign(
         { id: user._id },
         process.env.ACCESS_TOKEN as string,
-        {
-          expiresIn: "5m",
-        }
+        { expiresIn: "5m" }
       );
 
       const refreshToken = jwt.sign(
         { id: user._id },
         process.env.REFRESH_TOKEN as string,
-        {
-          expiresIn: "3d",
-        }
+        { expiresIn: "3d" }
       );
 
       req.user = user;
@@ -229,10 +238,12 @@ export const updateAccessToken = CatchAsyncError(
 
       await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
+      console.log("Tokens renovados y cookies actualizadas");
+
       next();
     } catch (error: any) {
-      console.error("Error en actualizar token de acceso:", error);
-      return next(new ErrorHandler(error.message, 400));
+      console.error("Error general en actualizar token de acceso:", error);
+      return next(new ErrorHandler(error.message || "Error desconocido", 500));
     }
   }
 );

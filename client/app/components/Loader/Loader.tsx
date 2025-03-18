@@ -1,7 +1,16 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import "./Loader.css";
 
 const Loader = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div
