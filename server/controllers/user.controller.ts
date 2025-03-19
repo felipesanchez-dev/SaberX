@@ -185,26 +185,22 @@ export const updateAccessToken = CatchAsyncError(
       const refresh_token = req.cookies.refresh_token as string;
 
       if (!refresh_token) {
-        return next(new ErrorHandler("No hay token de refresco", 400));
+        return next(new ErrorHandler("Token de actualización faltante", 400));
       }
-      let decoded;
-      try {
-        decoded = jwt.verify(
-          refresh_token,
-          process.env.REFRESH_TOKEN as string
-        ) as jwt.JwtPayload;
-      } catch (err) {
-        return next(new ErrorHandler("Token inválido o expirado", 401));
+
+      const decoded = jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN as string
+      ) as { id: string };
+
+      if (!decoded) {
+        return next(new ErrorHandler("Error: token inválido", 400));
       }
 
       const sesion = await redis.get(decoded.id as string);
-
       if (!sesion) {
         return next(
-          new ErrorHandler(
-            "Por favor inicie sesión para acceder a este recurso",
-            403
-          )
+          new ErrorHandler("Por favor inicia sesión para acceder", 400)
         );
       }
 
@@ -213,13 +209,17 @@ export const updateAccessToken = CatchAsyncError(
       const accessToken = jwt.sign(
         { id: user._id },
         process.env.ACCESS_TOKEN as string,
-        { expiresIn: "5m" }
+        {
+          expiresIn: "5m",
+        }
       );
 
       const refreshToken = jwt.sign(
         { id: user._id },
         process.env.REFRESH_TOKEN as string,
-        { expiresIn: "3d" }
+        {
+          expiresIn: "3d",
+        }
       );
 
       req.user = user;
@@ -229,9 +229,13 @@ export const updateAccessToken = CatchAsyncError(
 
       await redis.set(user._id, JSON.stringify(user), "EX", 604800);
 
-      next();
+      return res.status(200).json({
+        success: true,
+        accessToken,
+      });
     } catch (error: any) {
-      return next(new ErrorHandler(error.message || "Error desconocido", 500));
+      console.error("Error en actualizar token de acceso:", error);
+      return next(new ErrorHandler(error.message, 400));
     }
   }
 );
