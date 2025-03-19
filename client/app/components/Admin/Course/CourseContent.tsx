@@ -138,7 +138,7 @@ const CourseContent: FC<Props> = ({
                 }`}
               >
                 {showSectionInput && (
-                  <>
+                  <React.Fragment key={index}>
                     <div className="flex w-ful items-center gap-2">
                       <input
                         type="text"
@@ -156,7 +156,7 @@ const CourseContent: FC<Props> = ({
                       />
                       <BiSolidPencil className="text-gray-600 dark:text-gray-400 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition duration-200" />
                     </div>
-                  </>
+                  </React.Fragment>
                 )}
                 <br />
                 <div className="flex w-full items-center justify-between">
