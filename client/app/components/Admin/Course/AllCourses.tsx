@@ -12,7 +12,6 @@ import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
 import "../../utils/timeago-es";
 import toast from "react-hot-toast";
-import Link from "next/link";
 
 type Props = {};
 
@@ -30,8 +29,8 @@ const AllCourses = (props: Props) => {
   const columns = [
     { field: "id", headerName: "ID DEL CURSO", width: 215 },
     { field: "title", headerName: "NOMBRE DEL CURSO", width: 225 },
-    { field: "ratings", headerName: "CALIFICACIONES", width: 180 },
-    { field: "purchased", headerName: "ADQUIRIDO", width: 130 },
+    { field: "ratings", headerName: "RANKING", width: 200 },
+    { field: "purchased", headerName: "ADQUIRIDO", width: 150 },
     { field: "created_at", headerName: "FECHA DE CREACION", width: 215 },
     {
       field: " ",
@@ -40,7 +39,7 @@ const AllCourses = (props: Props) => {
       renderCell: (params: any) => {
         return (
           <>
-            <Button href={`/admin/edit-course/${params.row.id}`}>
+            <Button>
               <FiEdit2 className="dark:text-white text-white" size={20} />
             </Button>
           </>
@@ -82,7 +81,6 @@ const AllCourses = (props: Props) => {
         });
       });
   }
-
   useEffect(() => {
     if (isSuccess) {
       setOpen(false);

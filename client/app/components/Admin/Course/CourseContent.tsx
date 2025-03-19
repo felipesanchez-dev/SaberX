@@ -131,7 +131,7 @@ const CourseContent: FC<Props> = ({
             index === 0 ||
             item.videoSection !== courseContentData[index - 1].videoSection;
           return (
-            <>
+            <React.Fragment key={index}>
               <div
                 className={`w-full p-5 bg-gray-100 dark:bg-gray-800 rounded-lg transition-all ${
                   showSectionInput ? "mt-10" : "mb-0"
@@ -325,7 +325,7 @@ const CourseContent: FC<Props> = ({
                   </div>
                 )}
               </div>
-            </>
+            </React.Fragment>
           );
         })}
         <br />
