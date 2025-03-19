@@ -1,20 +1,23 @@
-import React from "react";
+import React, { FC, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { AiOutlineDelete, AiOutlineMail } from "react-icons/ai";
 import { useTheme } from "next-themes";
 import { DataGrid } from "@mui/x-data-grid";
-import { FiEdit2 } from "react-icons/fi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
 import "../../utils/timeago-es";
 import { useGetAllUsersQuery } from "../../../../redux/features/user/userApi";
+import { FiEdit2 } from "react-icons/fi";
 
-type Props = {};
+type Props = {
+  isTeam: boolean;
+};
 
-const AllUsers = (props: Props) => {
+const AllUsers: FC<Props> = ({ isTeam }) => {
   const { theme, setTheme } = useTheme();
+  const [active, setActive] = useState(false);
 
-  const { isLoading, data, error } = useGetAllUsersQuery({});
+  const { isLoading, data } = useGetAllUsersQuery({});
 
   const columns = [
     { field: "id", headerName: "ID", width: 120 },
@@ -60,7 +63,29 @@ const AllUsers = (props: Props) => {
     },
   ];
   const rows: any = [];
-  {
+
+  if (isTeam) {
+    const newData =
+      data &&
+      data.users.filter(
+        (item: any) =>
+          item.role === "admin" ||
+          item.role === "Docente" ||
+          item.role === "Moderador"
+      );
+
+    newData &&
+      newData.forEach((item: any) => {
+        rows.push({
+          id: item._id,
+          name: item.name,
+          email: item.email,
+          role: item.role,
+          courses: item.courses.length,
+          created_at: format(item.createdAt, "es-ES"),
+        });
+      });
+  } else {
     data &&
       data.users.forEach((item: any) => {
         rows.push({
@@ -80,6 +105,19 @@ const AllUsers = (props: Props) => {
         <Loader />
       ) : (
         <Box m="20px" width="95%" maxWidth="1200px">
+          <div className="w-full flex justify-end p-2">
+            <Button
+              variant="contained"
+              color="secondary"
+              className="!w-auto bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold py-2 px-4 rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105"
+              startIcon={<FiEdit2 />}
+              style={{ borderRadius: "25px" }}
+              onClick={() => setActive(!active)}
+            >
+              Agregar mas usuarios con roles elevados
+            </Button>
+          </div>
+
           <Box
             m="25px 0 0 0"
             height="80vh"
