@@ -2,7 +2,6 @@
 import Heading from "../../components/utils/Heading";
 import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
 import DashboardHeader from "../../components/Admin/DashboardHeader";
-import AllCourses from "../../components/Admin/Course/AllCourses";
 import React from "react";
 
 type Props = {};
@@ -16,8 +15,7 @@ const page = (props: Props) => {
           <AdminSidebar />
         </div>
         <div className="w-[95%]">
-          {/* <DashboardHeader /> */}
-          <AllCourses />
+          <DashboardHeader />
         </div>
       </div>
     </>
