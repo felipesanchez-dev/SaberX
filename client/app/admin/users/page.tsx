@@ -17,7 +17,7 @@ const page = (props: Props) => {
         </div>
         <div className="w-[95%]">
           <DashboardHeader />
-          <AllUsers />
+          <AllUsers isTeam={false} />
         </div>
       </div>
     </>
