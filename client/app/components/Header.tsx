@@ -17,6 +17,7 @@ import {
   useSocialAuthMutation,
 } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
+import { ThemeSwitcher } from "./utils/ThemeSwitcher";
 
 type Props = {
   open: boolean;
@@ -101,6 +102,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
+              {/* <ThemeSwitcher /> */}
               {user?.id || user?.name ? (
                 <Link href={"/profile"}>
                   <Image
