@@ -19,7 +19,6 @@ const courseRouter = express.Router();
 
 courseRouter.post(
   "/create-course",
-  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   uploadCourse
@@ -76,7 +75,6 @@ courseRouter.put(
 
 courseRouter.delete(
   "/delete-course/:id",
-  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   deleteCourse

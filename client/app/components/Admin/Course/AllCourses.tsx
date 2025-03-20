@@ -29,8 +29,8 @@ const AllCourses = (props: Props) => {
   const columns = [
     { field: "id", headerName: "ID DEL CURSO", width: 215 },
     { field: "title", headerName: "NOMBRE DEL CURSO", width: 225 },
-    { field: "ratings", headerName: "RANKING", width: 200 },
-    { field: "purchased", headerName: "ADQUIRIDO", width: 150 },
+    { field: "ratings", headerName: "CALIFICACIONES", width: 180 },
+    { field: "purchased", headerName: "ADQUIRIDO", width: 130 },
     { field: "created_at", headerName: "FECHA DE CREACION", width: 215 },
     {
       field: " ",
@@ -39,7 +39,7 @@ const AllCourses = (props: Props) => {
       renderCell: (params: any) => {
         return (
           <>
-            <Button>
+            <Button href={`/admin/edit-course/${params.row.id}`}>
               <FiEdit2 className="dark:text-white text-white" size={20} />
             </Button>
           </>
@@ -81,24 +81,22 @@ const AllCourses = (props: Props) => {
         });
       });
   }
+  const handleDelete = async () => {
+    const id = courseId;
+    await deleteCourse(id);
+  };
+
   useEffect(() => {
     if (isSuccess) {
       setOpen(false);
       toast.success("Curso eliminado con éxito");
       refetch();
     }
-    if (error) {
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
-      }
+    if (error && "data" in error) {
+      const errorMessage = error as any;
+      toast.error(errorMessage.data.message);
     }
-  }, [isSuccess, error]);
-
-  const handleDelete = async () => {
-    const id = courseId;
-    await deleteCourse(id);
-  };
+  }, [isSuccess, error, refetch]);
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen mt-10 mx-auto py-1 mb-5 shadow-lg rounded-xl p-5 bg-gradient-to">

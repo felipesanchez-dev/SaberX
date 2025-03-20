@@ -131,14 +131,14 @@ const CourseContent: FC<Props> = ({
             index === 0 ||
             item.videoSection !== courseContentData[index - 1].videoSection;
           return (
-            <React.Fragment key={index}>
+            <>
               <div
                 className={`w-full p-5 bg-gray-100 dark:bg-gray-800 rounded-lg transition-all ${
                   showSectionInput ? "mt-10" : "mb-0"
                 }`}
               >
                 {showSectionInput && (
-                  <React.Fragment key={index}>
+                  <>
                     <div className="flex w-ful items-center gap-2">
                       <input
                         type="text"
@@ -156,7 +156,7 @@ const CourseContent: FC<Props> = ({
                       />
                       <BiSolidPencil className="text-gray-600 dark:text-gray-400 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition duration-200" />
                     </div>
-                  </React.Fragment>
+                  </>
                 )}
                 <br />
                 <div className="flex w-full items-center justify-between">
@@ -325,7 +325,7 @@ const CourseContent: FC<Props> = ({
                   </div>
                 )}
               </div>
-            </React.Fragment>
+            </>
           );
         })}
         <br />

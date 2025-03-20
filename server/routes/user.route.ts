@@ -55,7 +55,6 @@ userRouter.put(
 
 userRouter.get(
   "/get-users",
-  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   getAllUsers
