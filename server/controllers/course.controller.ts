@@ -151,7 +151,7 @@ export const getAllCourses = CatchAsyncError(
         });
       }
 
-      await redis.setex("allCourses", 3600, JSON.stringify(courses));
+      // await redis.setex("allCourses", 3600, JSON.stringify(courses));
 
       return res.status(200).json({
         message: "Cursos obtenidos exitosamente",
