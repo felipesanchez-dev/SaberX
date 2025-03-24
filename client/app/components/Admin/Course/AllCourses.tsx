@@ -147,7 +147,7 @@ const AllCourses = (props: Props) => {
                   theme === "dark" ? "#e2e2e2 !important" : "#000 !important",
               },
               "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                backgroundColor: theme === "dark" ? "#002448" : "#A4A9FC",
+                backgroundColor: theme === "dark" ? "#fdfefe" : "#fdfefe",
                 borderBottom: "none",
                 color: theme === "dark" ? "#002448" : "#000",
               },

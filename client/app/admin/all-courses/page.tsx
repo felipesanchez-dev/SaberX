@@ -16,7 +16,7 @@ const page = (props: Props) => {
           <AdminSidebar />
         </div>
         <div className="w-[95%]">
-          {/* <DashboardHeader /> */}
+          <DashboardHeader />
           <AllCourses />
         </div>
       </div>

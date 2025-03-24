@@ -123,23 +123,6 @@ export const getSingleCourse = CatchAsyncError(
 export const getAllCourses = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // const isCacheExist = await redis.get("allCourses");
-
-      // if (isCacheExist) {
-      //   try {
-      //     const courses = JSON.parse(isCacheExist);
-      //     return res.status(200).json({
-      //       success: true,
-      //       message:
-      //         "Cursos cargados desde la memoria del caché (Se evitó una consulta a la base de datos innecesaria)",
-      //       cached: true,
-      //       courses,
-      //     });
-      //   } catch (error) {
-      //     console.error("Error al parsear datos de Redis:", error);
-      //   }
-      // }
-
       const courses = await CourseModel.find().select(
         "-courseData.videoUrl -courseData.suggestion -courseData.question -courseData.links"
       );
@@ -472,7 +455,7 @@ export const addReplayToReview = CatchAsyncError(
   }
 );
 
-export const getAllUsers = CatchAsyncError(
+export const getAdminAllCourses = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       getAllCoursesService(res);

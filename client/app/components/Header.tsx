@@ -102,7 +102,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
                   onClick={() => setOpenSidebar(true)}
                 />
               </div>
-              {/* <ThemeSwitcher /> */}
+              <ThemeSwitcher />
               {user?.id || user?.name ? (
                 <Link href={"/profile"}>
                   <Image
