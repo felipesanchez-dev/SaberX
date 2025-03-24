@@ -9,6 +9,7 @@ type Props = {
   setActive: (active: number) => void;
   courseData: any;
   handleCourseCreate: any;
+  isEdit: boolean;
 };
 
 const CoursePreview: FC<Props> = ({
@@ -16,6 +17,7 @@ const CoursePreview: FC<Props> = ({
   setActive,
   courseData,
   handleCourseCreate,
+  isEdit,
 }) => {
   const prevButton = () => {
     setActive(active - 1);
@@ -118,7 +120,15 @@ const CoursePreview: FC<Props> = ({
           className="flex items-center gap-2 px-6 py-3 text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md transition-all cursor-pointer text-sm sm:text-base"
           onClick={() => createCourse()}
         >
-          Terminar <ArrowRight className="w-5 h-5" />
+          {isEdit ? (
+            <>
+              Terminar de editar <ArrowRight className="w-5 h-5" />
+            </>
+          ) : (
+            <>
+              Guardar Terminar <ArrowRight className="w-5 h-5" />
+            </>
+          )}
         </div>
       </div>
     </div>

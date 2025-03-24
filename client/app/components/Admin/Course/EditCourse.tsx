@@ -5,10 +5,7 @@ import CourseData from "./CourseData";
 import CourseContent from "./CourseContent";
 import CoursePreview from "./CoursePreview";
 import CourseOptions from "./CourseOptions";
-import {
-  useCreateCourseMutation,
-  useGetAllCoursesQuery,
-} from "../../../../redux/features/courses/coursesApi";
+import { useGetAllCoursesQuery } from "../../../../redux/features/courses/coursesApi";
 import toast from "react-hot-toast";
 import { redirect, useParams } from "next/navigation";
 
@@ -75,6 +72,7 @@ const EditCourse: FC<Props> = ({ id }) => {
   ]);
 
   const [courseData, setCourseData] = useState({});
+  console.log("datos", courseData);
 
   const handleSubmit = async () => {
     const formattedBenefits = benefits.map((benefit) => ({
@@ -115,8 +113,6 @@ const EditCourse: FC<Props> = ({ id }) => {
     };
     setCourseData(data);
   };
-
-  console.log(courseData);
 
   const handleCourseCreate = async (e: any) => {
     const data = courseData;
@@ -162,6 +158,7 @@ const EditCourse: FC<Props> = ({ id }) => {
             setActive={setActive}
             courseData={courseData}
             handleCourseCreate={handleCourseCreate}
+            isEdit={true}
           />
         )}
       </div>
